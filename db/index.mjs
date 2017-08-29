@@ -1,4 +1,4 @@
-import * as mongooseAutoIncrement from 'mongoose-auto-increment'
+import mongooseAutoIncrement from 'mongoose-auto-increment'
 
 export default db => {
     mongooseAutoIncrement.initialize(db)
