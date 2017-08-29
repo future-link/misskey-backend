@@ -19,9 +19,9 @@ const applicationModel = albumFile(db)
 import notification from './schemas/notification'
 const notificationModel = notification(db)
 import postLike from './schemas/post-like'
-const postLikeModel = postLike.default(db)
+const postLikeModel = postLike(db)
 import postMention from './schemas/post-mention'
-const postMentionModel = postMention.default(db)
+const postMentionModel = postMention(db)
 import { post, status, repost, reply } from './schemas/post'
 const postModel = post(db)
 const statusModel = status(db)
@@ -31,7 +31,7 @@ import talkGroupInvitation from './schemas/talk-group-invitation'
 const talkGroupInvitationModel = talkGroupInvitation(db)
 import talkGroup from './schemas/talk-group'
 const talkGroupModel = talkGroup(db)
-import { talkHistory, talkUserHistory, talkGroupHistory } from './schemas/talk-history')
+import { talkHistory, talkUserHistory, talkGroupHistory } from './schemas/talk-history'
 const talkHistoryModel = talkHistory(db)
 const talkUserHistoryModel = talkUserHistory(db)
 const talkGroupHistoryModel = talkGroupHistory(db)
