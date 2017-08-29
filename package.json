@@ -10,5 +10,10 @@
   "bugs": {
     "url": "https://github.com/future-link/misskey-backend/issues"
   },
-  "homepage": "https://github.com/future-link/misskey-backend#readme"
+  "homepage": "https://github.com/future-link/misskey-backend#readme",
+  "dependencies": {
+    "@std/esm": "^0.6.0",
+    "mongoose": "^4.11.9",
+    "mongoose-auto-increment": "^5.0.1"
+  }
 }
