@@ -1,0 +1,14 @@
+{
+  "name": "misskey-backend",
+  "description": "rewrite misskey-delta/misskey-api",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/future-link/misskey-backend.git"
+  },
+  "author": "otofune <otofune@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/future-link/misskey-backend/issues"
+  },
+  "homepage": "https://github.com/future-link/misskey-backend#readme"
+}
