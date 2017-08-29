@@ -14,7 +14,7 @@ import talkGroupInvitation from './schemas/talk-group-invitation'
 import { talkHistory, talkUserHistory, talkGroupHistory } from './schemas/talk-history'
 import talkGroup from './schemas/talk-group'
 import user from './schemas/user'
-//import userFollowing from './schemas/user-following'
+import userFollowing from './schemas/user-following'
 
 mongoose.Promise = global.Promise
 const db = mongoose.createConnection(config.mongodb.uri, {
@@ -38,7 +38,7 @@ const talkHistoryModel = talkHistory(db)
 const talkUserHistoryModel = talkUserHistory(db)
 const talkGroupHistoryModel = talkGroupHistory(db)
 const userModel = user(db)
-//const userFollowingModel = userFollowing(db)
+const userFollowingModel = userFollowing(db)
 
 export {
     albumTagModel as AlbumTag,
@@ -58,5 +58,5 @@ export {
     talkUserHistoryModel as talkUserHistory,
     talkGroupHistoryModel as talkGroupHistory,
     userModel as user,
-    //userFollowingModel as userFollowing
+    userFollowingModel as userFollowing
 }
