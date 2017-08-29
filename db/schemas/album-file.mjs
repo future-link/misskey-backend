@@ -61,9 +61,12 @@ export const schema = new Schema({
 		required: true,
 		ref: 'User' }
 })
-schema.plugin(mongooseAutoIncrement.plugin, {
-	model: 'AlbumFile',
-	field: 'cursor'
-})
 
-export default db => db.model('AlbumFile', schema, 'AlbumFiles')
+export default db => {
+	mongooseAutoIncrement.initialize(db)
+	schema.plugin(mongooseAutoIncrement.plugin, {
+		model: 'AlbumFile',
+		field: 'cursor'
+	})
+	return db.model('AlbumFile', schema, 'AlbumFiles')
+}

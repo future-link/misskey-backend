@@ -30,9 +30,12 @@ export const schema = new Schema({
 		required: true,
 		ref: 'User' }
 })
-schema.plugin(mongooseAutoIncrement.plugin, {
-	model: 'Notification',
-	field: 'cursor'
-})
 
-export default db => db.model('Notification', schema, 'Notifications')
+export default db => {
+	mongooseAutoIncrement.initialize(db)
+	schema.plugin(mongooseAutoIncrement.plugin, {
+		model: 'Notification',
+		field: 'cursor'
+	})
+	return db.model('Notification', schema, 'Notifications')
+}

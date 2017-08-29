@@ -18,9 +18,12 @@ export const schema = new Schema({
 		required: true,
 		ref: 'User' }
 })
-schema.plugin(mongooseAutoIncrement.plugin, {
-	model: 'UserFollowing',
-	field: 'cursor'
-})
 
-export default db => db.model('UserFollowing', schema, 'UserFollowings')
+export default db => {
+	mongooseAutoIncrement.initialize(db)
+	schema.plugin(mongooseAutoIncrement.plugin, {
+		model: 'UserFollowing',
+		field: 'cursor'
+	})
+	return db.model('UserFollowing', schema, 'UserFollowings')
+}

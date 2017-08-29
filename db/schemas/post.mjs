@@ -67,7 +67,8 @@ const nonRepostSchemaObject = Object.assign({
 		default: null },
 }, generalSchemaObject);
 
-const enableAutoincrement = schema => {
+const enableAutoincrement = (db, schema) => {
+	mongooseAutoIncrement.initialize(db)
 	schema.plugin(mongooseAutoIncrement.plugin, {
 		model: 'Post',
 		field: 'cursor'
@@ -81,7 +82,6 @@ export const StatusSchema = new Schema(Object.assign({
 		required: true,
 		default: 'status' }
 }, nonRepostSchemaObject))
-enableAutoincrement(StatusSchema)
 export const ReplySchema = new Schema(Object.assign({
 	inReplyToPost: {
 		type: Schema.Types.ObjectId,
@@ -93,7 +93,6 @@ export const ReplySchema = new Schema(Object.assign({
 		required: true,
 		default: 'reply' }
 }, nonRepostSchemaObject));
-enableAutoincrement(ReplySchema)
 export const RepostSchema = new Schema(Object.assign({
 	post: {
 		type: Schema.Types.ObjectId,
@@ -104,10 +103,18 @@ export const RepostSchema = new Schema(Object.assign({
 		required: true,
 		default: 'repost' }
 }, generalSchemaObject));
-enableAutoincrement(RepostSchema)
 
 const post = db => db.model('Post', PostSchema, 'Posts')
-const status = db => db.model('Status', StatusSchema, 'Posts')
-const reply = db => db.model('Reply', schema, 'Posts')
-const repost = db => db.model('Repost', RepostSchema, 'Posts')
+const status = db => {
+	enableAutoincrement(db, StatusSchema)
+	return db.model('Status', StatusSchema, 'Posts')
+}
+const reply = db => {
+	enableAutoincrement(db, ReplySchema)
+	return db.model('Reply', ReplySchema, 'Posts')
+}
+const repost = db => {
+	enableAutoincrement(db, RepostSchema)
+	return db.model('Repost', RepostSchema, 'Posts')
+}
 export { post, status, reply, repost }
