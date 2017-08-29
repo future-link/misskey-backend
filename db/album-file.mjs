@@ -51,11 +51,11 @@ export const schema = new Schema({
 	serverPath: {
 		type: String,
 		required: false },
-	tags: [{
-		type: Schema.Types.ObjectId,
+	tags: {
+		type: [Schema.Types.ObjectId],
 		required: false,
 		default: null,
-		ref: 'AlbumTag' }],
+		ref: 'AlbumTag' },
 	user: {
 		type: Schema.Types.ObjectId,
 		required: true,

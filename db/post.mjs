@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 import mongooseAutoIncrement from 'mongoose-auto-increment'
 
-const generalPostSchemaObject = {
+const generalSchemaObject = {
 	app: {
 		type: Schema.Types.ObjectId,
 		required: false,
@@ -65,7 +65,7 @@ const nonRepostSchemaObject = Object.assign({
 		type: String,
 		required: false,
 		default: null },
-}, generalPostSchemaObject);
+}, generalSchemaObject);
 
 const enableAutoincrement = schema => {
 	schema.plugin(mongooseAutoIncrement.plugin, {
@@ -74,7 +74,7 @@ const enableAutoincrement = schema => {
 	})
 }
 
-export const PostSchema = new Schema(generalPostSchemaObject)
+export const PostSchema = new Schema(generalSchemaObject)
 export const StatusSchema = new Schema(Object.assign({
 	type: {
 		type: String,
@@ -103,7 +103,7 @@ export const RepostSchema = new Schema(Object.assign({
 		type: String,
 		required: true,
 		default: 'repost' }
-}, generalPostSchemaObject));
+}, generalSchemaObject));
 enableAutoincrement(RepostSchema)
 
 const post = db => db.model('Post', PostSchema, 'Posts')
