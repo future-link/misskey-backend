@@ -1,3 +1,4 @@
 node_modules/
 .env
 .esm-cache/
+npm-debug.log
