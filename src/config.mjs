@@ -1,6 +1,9 @@
 import dotenv from 'dotenv-safe'
+import path from 'path'
 
-dotenv.load()
+dotenv.load({
+    path: path.resolve('..')
+})
 
 export default {
     mongodb: {
