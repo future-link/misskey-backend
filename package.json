@@ -5,6 +5,10 @@
     "type": "git",
     "url": "git+https://github.com/future-link/misskey-backend.git"
   },
+  "scripts": {
+    "test": "npm run lint",
+    "lint": "find src -type f -name '*.mjs' | xargs standard"
+  },
   "author": "otofune <otofune@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -16,5 +20,8 @@
     "dotenv-safe": "^4.0.4",
     "mongoose": "^4.11.9",
     "mongoose-auto-increment": "^5.0.1"
+  },
+  "devDependencies": {
+    "standard": "^10.0.3"
   }
 }

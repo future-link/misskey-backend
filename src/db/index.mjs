@@ -18,13 +18,13 @@ import userFollowing from './schemas/user-following'
 
 mongoose.Promise = global.Promise
 const db = mongoose.createConnection(config.mongodb.uri, {
-    promiseLibrary: global.Promise
+  promiseLibrary: global.Promise
 })
 
 const albumTagModel = albumTag(db)
 const albumFolderModel = albumFolder(db)
 const albumFileModel = albumFile(db)
-const applicationModel = albumFile(db)
+const applicationModel = application(db)
 const notificationModel = notification(db)
 const postLikeModel = postLike(db)
 const postMentionModel = postMention(db)
@@ -41,22 +41,22 @@ const userModel = user(db)
 const userFollowingModel = userFollowing(db)
 
 export {
-    albumTagModel as AlbumTag,
-    albumFolderModel as albumFolder,
-    albumFileModel as albumFile,
-    applicationModel as application,
-    notificationModel as notification,
-    postLikeModel as postLike,
-    postMentionModel as postMention,
-    postModel as post,
-    statusModel as status,
-    repostModel as repost,
-    replyModel as reply,
-    talkGroupInvitationModel as talkGroupInvitation,
-    talkGroupModel as talkGroup,
-    talkHistoryModel as talkHistory,
-    talkUserHistoryModel as talkUserHistory,
-    talkGroupHistoryModel as talkGroupHistory,
-    userModel as user,
-    userFollowingModel as userFollowing
+  albumTagModel as AlbumTag,
+  albumFolderModel as albumFolder,
+  albumFileModel as albumFile,
+  applicationModel as application,
+  notificationModel as notification,
+  postLikeModel as postLike,
+  postMentionModel as postMention,
+  postModel as post,
+  statusModel as status,
+  repostModel as repost,
+  replyModel as reply,
+  talkGroupInvitationModel as talkGroupInvitation,
+  talkGroupModel as talkGroup,
+  talkHistoryModel as talkHistory,
+  talkUserHistoryModel as talkUserHistory,
+  talkGroupHistoryModel as talkGroupHistory,
+  userModel as user,
+  userFollowingModel as userFollowing
 }
