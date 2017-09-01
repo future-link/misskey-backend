@@ -19,12 +19,6 @@ import userFollowing from './schemas/user-following'
 
 import transform from './common/transform'
 
-const registCommonTransform = (Model) => {
-  if (!Model.options) Model.options = {}
-  if (!Model.options.toObject) Model.options.toObject = {}
-  Model.options.toObject.transform = transform
-}
-
 mongoose.Promise = global.Promise
 const db = mongoose.createConnection(config.mongodb.uri, {
   promiseLibrary: global.Promise
@@ -39,7 +33,6 @@ const Notification = notification(db)
 const PostLike = postLike(db)
 const PostMention = postMention(db)
 const Post = post(db)
-registCommonTransform(Post)
 const Status = status(db)
 const Repost = repost(db)
 const Reply = reply(db)

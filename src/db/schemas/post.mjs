@@ -1,6 +1,14 @@
 import mongoose from 'mongoose'
 import mongooseAutoIncrement from 'mongoose-auto-increment'
 
+import transform from './common/transform'
+
+const schemaOption = {
+  toObject: {
+    transform
+  }
+}
+
 const Schema = mongoose.Schema
 
 const generalSchemaObject = {
@@ -75,13 +83,13 @@ const enableAutoincrement = (db, schema) => {
   })
 }
 
-export const PostSchema = new Schema(generalSchemaObject)
+export const PostSchema = new Schema(generalSchemaObject, schemaOption)
 export const StatusSchema = new Schema(Object.assign({
   type: {
     type: String,
     required: true,
     default: 'status' }
-}, nonRepostSchemaObject))
+}, nonRepostSchemaObject), schemaOption)
 export const ReplySchema = new Schema(Object.assign({
   inReplyToPost: {
     type: Schema.Types.ObjectId,
@@ -92,7 +100,7 @@ export const ReplySchema = new Schema(Object.assign({
     type: String,
     required: true,
     default: 'reply' }
-}, nonRepostSchemaObject))
+}, nonRepostSchemaObject), schemaOption)
 export const RepostSchema = new Schema(Object.assign({
   post: {
     type: Schema.Types.ObjectId,
@@ -102,7 +110,7 @@ export const RepostSchema = new Schema(Object.assign({
     type: String,
     required: true,
     default: 'repost' }
-}, generalSchemaObject))
+}, generalSchemaObject), schemaOption)
 
 const post = db => db.model('Post', PostSchema, 'Posts')
 const status = db => {
