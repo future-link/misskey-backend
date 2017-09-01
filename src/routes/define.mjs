@@ -8,6 +8,10 @@ export default {
     {
       path: '/',
       handler: handlers.status
+    },
+    {
+      path: '/posts/:id',
+      handler: handlers.posts.findById
     }
   ]
 }

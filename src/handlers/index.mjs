@@ -1,7 +1,4 @@
-import hash from '../tools/git-hash'
+import status from './status'
+import * as posts from './posts'
 
-export const status = (ctx) => {
-  ctx.body = {
-    hash
-  }
-}
+export { status, posts }
