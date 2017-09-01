@@ -1,1 +1,3 @@
-module.exports = () => 'hoi!'
+module.exports = (ctx) => {
+  ctx.body = 'hoi!'
+}
