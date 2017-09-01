@@ -1,13 +1,13 @@
 import path from 'path'
 
 // load handlers
-import * as indexHandler from '../handlers/index'
+import * as handlers from '../handlers'
 
 export default {
   get: [
     {
       path: '/',
-      handler: indexHandler.hoi
+      handler: handlers.status
     }
   ]
 }

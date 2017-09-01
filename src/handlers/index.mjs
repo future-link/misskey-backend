@@ -1,3 +1,7 @@
-export const hoi = (ctx) => {
-  ctx.body = 'hoi!'
+import hash from '../tools/git-hash'
+
+export const status = (ctx) => {
+  ctx.body = {
+    hash
+  }
 }
