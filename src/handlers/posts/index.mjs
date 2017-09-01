@@ -1,1 +1,1 @@
-export { default as findById } from './get-by-id'
+export { default as findById } from './find-by-id'
