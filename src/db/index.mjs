@@ -17,8 +17,6 @@ import talkGroup from './schemas/talk-group'
 import user from './schemas/user'
 import userFollowing from './schemas/user-following'
 
-import transform from './common/transform'
-
 mongoose.Promise = global.Promise
 const db = mongoose.createConnection(config.mongodb.uri, {
   promiseLibrary: global.Promise
