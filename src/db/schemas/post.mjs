@@ -68,7 +68,7 @@ const nonRepostSchemaObject = Object.assign({
     type: String,
     required: false,
     default: null }
-}, generalSchemaObject)
+})
 
 const enableAutoincrement = (db, schema) => {
   schema.plugin(mongooseAutoIncrement.plugin, {
