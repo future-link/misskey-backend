@@ -21,7 +21,6 @@ export const schema = new Schema({
 })
 
 export default db => {
-  mongooseAutoIncrement.initialize(db)
   schema.plugin(mongooseAutoIncrement.plugin, {
     model: 'PostLike',
     field: 'cursor'

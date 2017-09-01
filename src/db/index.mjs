@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import mongooseAutoIncrement from 'mongoose-auto-increment'
 
 import config from '../config'
 
@@ -20,6 +21,7 @@ mongoose.Promise = global.Promise
 const db = mongoose.createConnection(config.mongodb.uri, {
   promiseLibrary: global.Promise
 })
+mongooseAutoIncrement.initialize(db)
 
 const AlbumTag = albumTag(db)
 const AlbumFolder = albumFolder(db)

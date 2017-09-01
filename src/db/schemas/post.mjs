@@ -69,7 +69,6 @@ const nonRepostSchemaObject = Object.assign({
 }, generalSchemaObject)
 
 const enableAutoincrement = (db, schema) => {
-  mongooseAutoIncrement.initialize(db)
   schema.plugin(mongooseAutoIncrement.plugin, {
     model: 'Post',
     field: 'cursor'
