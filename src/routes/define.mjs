@@ -1,12 +1,13 @@
 import path from 'path'
 
-const route = path.join(__dirname, '..', 'handlers')
+// load handlers
+import * as indexHandler from '../handlers/index'
 
 export default {
   get: [
     {
       path: '/',
-      handler: require(path.join(route, 'index'))
+      handler: indexHandler.hoi
     }
   ]
 }
