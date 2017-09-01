@@ -21,42 +21,42 @@ const db = mongoose.createConnection(config.mongodb.uri, {
   promiseLibrary: global.Promise
 })
 
-const albumTagModel = albumTag(db)
-const albumFolderModel = albumFolder(db)
-const albumFileModel = albumFile(db)
-const applicationModel = application(db)
-const notificationModel = notification(db)
-const postLikeModel = postLike(db)
-const postMentionModel = postMention(db)
-const postModel = post(db)
-const statusModel = status(db)
-const repostModel = repost(db)
-const replyModel = reply(db)
-const talkGroupInvitationModel = talkGroupInvitation(db)
-const talkGroupModel = talkGroup(db)
-const talkHistoryModel = talkHistory(db)
-const talkUserHistoryModel = talkUserHistory(db)
-const talkGroupHistoryModel = talkGroupHistory(db)
-const userModel = user(db)
-const userFollowingModel = userFollowing(db)
+const AlbumTag = albumTag(db)
+const AlbumFolder = albumFolder(db)
+const AlbumFile = albumFile(db)
+const Application = application(db)
+const Notification = notification(db)
+const PostLike = postLike(db)
+const PostMention = postMention(db)
+const Post = post(db)
+const Status = status(db)
+const Repost = repost(db)
+const Reply = reply(db)
+const TalkGroupInvitation = talkGroupInvitation(db)
+const TalkGroup = talkGroup(db)
+const TalkHistory = talkHistory(db)
+const TalkUserHistory = talkUserHistory(db)
+const TalkGroupHistory = talkGroupHistory(db)
+const User = user(db)
+const UserFollowing = userFollowing(db)
 
 export {
-  albumTagModel as AlbumTag,
-  albumFolderModel as AlbumFolder,
-  albumFileModel as AlbumFile,
-  applicationModel as Application,
-  notificationModel as Notification,
-  postLikeModel as PostLike,
-  postMentionModel as PostMention,
-  postModel as Post,
-  statusModel as Status,
-  repostModel as Repost,
-  replyModel as Reply,
-  talkGroupInvitationModel as TalkGroupInvitation,
-  talkGroupModel as TalkGroup,
-  talkHistoryModel as TalkHistory,
-  talkUserHistoryModel as TalkUserHistory,
-  talkGroupHistoryModel as TalkGroupHistory,
-  userModel as User,
-  userFollowingModel as UserFollowing
+  AlbumTag,
+  AlbumFolder,
+  AlbumFile,
+  Application,
+  Notification,
+  PostLike,
+  PostMention,
+  Post,
+  Status,
+  Repost,
+  Reply,
+  TalkGroupInvitation,
+  TalkGroup,
+  TalkHistory,
+  TalkUserHistory,
+  TalkGroupHistory,
+  User,
+  UserFollowing
 }
