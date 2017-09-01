@@ -1,5 +1,5 @@
 const transform = (doc, ret) => {
-  ret.id = ret._id
+  ret.id = doc.id
   delete ret.id
   delete ret.__v
 }
