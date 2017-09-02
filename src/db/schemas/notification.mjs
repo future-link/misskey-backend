@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import mongooseAutoIncrement from 'mongoose-auto-increment'
 
-import { commonSchemaOption } from '../common/transform'
+import { commonSchemaOption } from '../common'
 
 const Schema = mongoose.Schema
 

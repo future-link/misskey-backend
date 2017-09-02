@@ -1,27 +1,28 @@
-export default (user) => {
-  const clone = Object.assign({}, user)
+import general from './general'
+
+export default (doc, ret) => {
+  general(doc, ret)
   // 利用されていない・不要な情報
-  delete clone.birthday
-  delete clone.color
-  delete clone.credit
-  delete clone.pinnedPost
-  delete clone.avatarPath
-  delete clone.bannerPath
-  delete clone.wallpaperPath
-  delete clone.isDeleted
-  delete clone.isPrivate
-  delete clone.isPro
-  delete clone.isStaff
-  delete clone.isSuspended
-  delete clone.isVerified
-  delete clone.wallpaper
+  delete ret.birthday
+  delete ret.color
+  delete ret.credit
+  delete ret.pinnedPost
+  delete ret.avatarPath
+  delete ret.bannerPath
+  delete ret.wallpaperPath
+  delete ret.isDeleted
+  delete ret.isPrivate
+  delete ret.isPro
+  delete ret.isStaff
+  delete ret.isSuspended
+  delete ret.isVerified
+  delete ret.wallpaper
   // 他のフィールドと使用用途が被っていて、なおかつ使用されていない情報
-  delete clone.description
+  delete ret.description
   // パブリックに開示する必要のない情報
-  delete clone.timelineReadCursor
-  delete clone.screenNameLower
+  delete ret.timelineReadCursor
+  delete ret.screenNameLower
   // 機密にすべき情報
-  delete clone.email
-  delete clone.encryptedPassword
-  return clone
+  delete ret.email
+  delete ret.encryptedPassword
 }

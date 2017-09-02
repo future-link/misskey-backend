@@ -1,14 +1,7 @@
-const transform = (doc, ret) => {
-  ret.id = ret._id
-  delete ret._id
-  delete ret.__v
-}
+import { transformGeneral } from '../transformers'
 
-const commonSchemaOption = {
+export default {
   toObject: {
-    transform
+    transform: transformGeneral
   }
 }
-
-export default transform
-export { commonSchemaOption }

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import { commonSchemaOption } from '../common/transform'
+import { commonSchemaOption } from '../common'
 
 const Schema = mongoose.Schema
 
