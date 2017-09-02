@@ -21,6 +21,10 @@ export default {
     {
       path: '/users/:id',
       handler: handlers.users.findById
+    },
+    {
+      path: '/users/@:screenname',
+      handler: handlers.users.findByScreenname
     }
   ]
 }
