@@ -19,12 +19,12 @@ export default {
       handler: handlers.media.findById
     },
     {
-      path: '/users/:id',
-      handler: handlers.users.findById
-    },
-    {
       path: '/users/@:screenname',
       handler: handlers.users.findByScreenname
+    },
+    {
+      path: '/users/:id',
+      handler: handlers.users.findById
     }
   ]
 }
