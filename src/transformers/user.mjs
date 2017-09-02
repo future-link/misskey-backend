@@ -14,6 +14,8 @@ export default (user) => {
   delete clone.isStaff
   delete clone.isSuspended
   delete clone.isVerified
+  // 他のフィールドと使用用途が被っていて、なおかつ使用されていない情報
+  delete clone.description
   // パブリックに開示する必要のない情報
   delete clone.timelineReadCursor
   delete clone.screenNameLower
