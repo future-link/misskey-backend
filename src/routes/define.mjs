@@ -12,6 +12,10 @@ export default {
     {
       path: '/posts/:id',
       handler: handlers.posts.findById
+    },
+    {
+      path: '/media/:id',
+      handler: handlers.media.findById
     }
   ]
 }
