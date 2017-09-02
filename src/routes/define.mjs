@@ -5,6 +5,7 @@ import * as handlers from '../handlers'
 
 export default {
   get: [
+    // 認証不要
     {
       path: '/',
       handler: handlers.status
@@ -16,6 +17,10 @@ export default {
     {
       path: '/media/:id',
       handler: handlers.media.findById
+    },
+    {
+      path: '/users/:id',
+      handler: handlers.users.findById
     }
   ]
 }
