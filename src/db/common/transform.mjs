@@ -1,4 +1,4 @@
-import { transformGeneral } from '../transformers'
+import { transformGeneral } from '../../transformers'
 
 export default {
   toObject: {
