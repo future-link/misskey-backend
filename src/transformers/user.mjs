@@ -16,6 +16,7 @@ export default (doc, ret) => {
   delete ret.isStaff
   delete ret.isSuspended
   delete ret.isVerified
+  delete ret.isEmailVerified
   delete ret.wallpaper
   // 他のフィールドと使用用途が被っていて、なおかつ使用されていない情報
   delete ret.description
