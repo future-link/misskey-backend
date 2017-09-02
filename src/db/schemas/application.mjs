@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 
+import { commonSchemaOption } from '../common/transform'
+
 const Schema = mongoose.Schema
 
 export const schema = new Schema({
@@ -35,6 +37,6 @@ export const schema = new Schema({
     type: Boolean,
     required: false,
     default: false }
-})
+}, commonSchemaOption)
 
 export default db => db.model('Application', schema, 'Applications')

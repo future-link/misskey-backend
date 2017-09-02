@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 
+import { commonSchemaOption } from '../common/transform'
+
 const Schema = mongoose.Schema
 
 export const schema = new Schema({
@@ -23,6 +25,6 @@ export const schema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'User' }
-})
+}, commonSchemaOption)
 
 export default db => db.model('TalkGroupInvitation', schema, 'TalkGroupInvitations')

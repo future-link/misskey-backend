@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 
+import { commonSchemaOption } from '../common/transform'
+
 const Schema = mongoose.Schema
 
 const generalSchemaObject = {
@@ -21,7 +23,7 @@ const generalSchemaObject = {
     required: true }
 }
 
-export const talkHistorySchema = new Schema(generalSchemaObject)
+export const talkHistorySchema = new Schema(generalSchemaObject, commonSchemaOption)
 export const talkUserHistorySchema = new Schema(Object.assign({
   recipient: {
     type: Schema.Types.ObjectId,
@@ -31,7 +33,7 @@ export const talkUserHistorySchema = new Schema(Object.assign({
     type: String,
     required: false,
     default: 'user' }
-}, generalSchemaObject))
+}, generalSchemaObject), commonSchemaOption)
 export const talkGroupHistorySchema = new Schema(Object.assign({
   group: {
     type: Schema.Types.ObjectId,
@@ -41,7 +43,7 @@ export const talkGroupHistorySchema = new Schema(Object.assign({
     type: String,
     required: false,
     default: 'group' }
-}, generalSchemaObject))
+}, generalSchemaObject), commonSchemaOption)
 
 const talkHistory = db => db.model('TalkHistory', talkUserHistorySchema, 'TalkHistories')
 const talkUserHistory = db => db.model('TalkUserHistory', talkUserHistorySchema, 'TalkHistories')
