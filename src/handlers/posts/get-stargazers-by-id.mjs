@@ -12,5 +12,6 @@ export default async (ctx, id) => {
   }).populate('user')
   if (!likes)
     ctx.throw(404, 'there are no stargazers to the post has given ID.')
-  ctx.body = likes.toObject().map(like => like.user)
+  ctx.body = []
+  likes.forEach(like => { ctx.body.push(like.user.toObject()) })
 }
