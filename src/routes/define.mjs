@@ -12,19 +12,19 @@ export default {
     },
     {
       path: '/posts/:id',
-      handler: handlers.posts.findById
+      handler: handlers.posts.getById
     },
     {
       path: '/media/:id',
-      handler: handlers.media.findById
+      handler: handlers.media.getById
     },
     {
       path: '/users/@:screenname',
-      handler: handlers.users.findByScreenname
+      handler: handlers.users.getByScreenname
     },
     {
       path: '/users/:id',
-      handler: handlers.users.findById
+      handler: handlers.users.getById
     }
   ]
 }

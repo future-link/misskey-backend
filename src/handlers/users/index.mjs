@@ -1,2 +1,2 @@
-export { default as findById } from './find-by-id'
-export { default as findByScreenname } from './find-by-screenname'
+export { default as getById } from './get-by-id'
+export { default as getByScreenname } from './get-by-screenname'
