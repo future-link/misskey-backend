@@ -15,6 +15,10 @@ export default {
       handler: handlers.posts.getById
     },
     {
+      path: '/posts/:id/stargazers',
+      handler: handlers.posts.getStargazersById
+    },
+    {
       path: '/media/:id',
       handler: handlers.media.getById
     },
