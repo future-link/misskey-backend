@@ -34,8 +34,11 @@ const formatters = {
 }
 app.use(async (ctx, next) => {
   const ps = ctx.path.split('.')
+
   if (ps.length === 1) return await next()
-  const format = ps[1]
+
+  const format = ps.pop()
+  // when unsupported extension type, stop middleware chaining
   if (!formats.includes(format)) {
     ctx.status = 400
     ctx.body = {
@@ -43,7 +46,11 @@ app.use(async (ctx, next) => {
     }
     return
   }
+
+  // inject path with itself without extension
+  ctx.path = ps.join('.')
   await next()
+
   if (ctx.body && formatters[format]) {
     ctx.type = formatters[format].mime
     ctx.body = formatters[format].processor(ctx.body)
