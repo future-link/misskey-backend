@@ -1,3 +1,3 @@
-import './media'
+import './files'
 import './posts'
 import './users'
