@@ -1,6 +1,7 @@
 import Koa from 'koa'
 import route from 'koa-route'
 import cluster from 'cluster'
+import msgpack from 'msgpack'
 
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
@@ -21,6 +22,37 @@ app.use(async (ctx, next) => {
   // more datail for debug (only showes in verbose mode)
   logger.detail(`- responded in ${duration} ms`)
   logger.detail(`- responded with status code ${ctx.status}`)
+})
+
+// support `.ext`
+const formats = [ 'json', 'msgpack' ]
+const formatters = {
+  msgpack: {
+    mime: 'application/x-msgpack',
+    processor: msgpack.pack
+  },
+  json: {
+    mime: 'application/json',
+    // noting to do
+    processor: body => body
+  }
+}
+app.use(async (ctx, next) => {
+  const ps = ctx.path.split('.')
+  if (ps.length === 1) return await next()
+  const format = ps[1]
+  if (!formats.includes(format)) {
+    ctx.status = 400
+    ctx.body = {
+      message: 'unsupported extension type specified.'
+    }
+    return
+  }
+  await next()
+  if (ctx.body) {
+    ctx.type = formatters[format].mime
+    ctx.body = formatters[format].processor(ctx.body)
+  }
 })
 
 // error handling

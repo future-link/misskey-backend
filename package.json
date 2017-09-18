@@ -23,7 +23,8 @@
     "koa": "^2.3.0",
     "koa-route": "^3.2.0",
     "mongoose": "^4.11.9",
-    "mongoose-auto-increment": "^5.0.1"
+    "mongoose-auto-increment": "^5.0.1",
+    "msgpack": "^1.0.2"
   },
   "devDependencies": {
     "standard": "^10.0.3"
