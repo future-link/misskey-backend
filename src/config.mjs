@@ -1,5 +1,4 @@
 import dotenv from 'dotenv-safe'
-import path from 'path'
 
 dotenv.load()
 

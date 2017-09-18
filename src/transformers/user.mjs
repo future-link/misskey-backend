@@ -26,4 +26,5 @@ export default (doc, ret) => {
   // 機密にすべき情報
   delete ret.email
   delete ret.encryptedPassword
+  // 実際に計算を行う情報
 }
