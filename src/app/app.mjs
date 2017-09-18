@@ -12,7 +12,7 @@ const logger = new Logger(cluster.isWorker ? `app#${cluster.worker.id}` : 'app')
 // access logging
 app.use(async (ctx, next) => {
   // ex: 2017/08/30 22:59:26 +0900 | app#6 | GET /, ::1, Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36
-  logger.log(`${ctx.method} ${ctx.url}, ${ctx.ip}, ${ctx.headers['user-agent']}`)
+  logger.log(`${ctx.method} ${ctx.path}, ${ctx.ip}, ${ctx.headers['user-agent']}`)
   const start = Date.now()
   // wait next middleware
   await next()
