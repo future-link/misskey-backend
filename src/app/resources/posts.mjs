@@ -20,6 +20,6 @@ app.use(route.get('/posts/:id/stargazers', async (ctx, id) => {
   }).populate('user')
   if (!likes) { ctx.throw(404, 'there are no stargazers to the post has given ID.') }
   const stargazers = []
-  likes.forEach(like => { ctx.body.push(like.user.toObject()) })
+  likes.forEach(like => { stargazers.push(like.user.toObject()) })
   ctx.body = { stargazers }
 }))
