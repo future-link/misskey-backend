@@ -30,11 +30,6 @@ const formatters = {
   msgpack: {
     mime: 'application/x-msgpack',
     processor: msgpack.pack
-  },
-  json: {
-    mime: 'application/json',
-    // noting to do
-    processor: body => body
   }
 }
 app.use(async (ctx, next) => {
@@ -49,7 +44,7 @@ app.use(async (ctx, next) => {
     return
   }
   await next()
-  if (ctx.body) {
+  if (ctx.body && formatters[format]) {
     ctx.type = formatters[format].mime
     ctx.body = formatters[format].processor(ctx.body)
   }
