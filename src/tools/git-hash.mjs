@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const git = path.join(__dirname, '..', '..', '.git')
+const git = path.resolve('.git')
 const head = fs.readFileSync(path.join(git, 'HEAD')).toString().trim()
 
 let hash
