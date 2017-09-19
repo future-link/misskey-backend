@@ -85,6 +85,12 @@ app.use(async (ctx, next) => {
   }
 })
 
+// CORS
+app.use(async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Origin', '*')
+  await next()
+})
+
 // status
 app.use(route.get('/', async (ctx) => {
   ctx.body = {
