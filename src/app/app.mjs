@@ -126,15 +126,15 @@ const authenticater = {
     const hs = crypto.createHash('sha1').update(secret).digest('hex')
 
     // verify secret by cache
-    if (await util.promisify(redis.get)(`mb:auth:basic:${id}@${hs}`)) return user
+    if (await util.promisify(redis.get.bind(redis))(`mb:auth:basic:${id}@${hs}`)) return user
 
     // verify secret by bcrypt
     if (!(await bcrypt.compare(secret, user.encryptedPassword))) return null
 
     // cache 1hour with redis
     const exptime = 1 * 60 * 60
-    redis.set(`mb:auth:basic:${user.id}@${hs}`, 'y', exptime)
-    redis.set(`mb:auth:basic:@${user.screenNameLower}@${hs}`, 'y', exptime)
+    redis.set(`mb:auth:basic:${user.id}@${hs}`, 'y', 'EX', exptime)
+    redis.set(`mb:auth:basic:@${user.screenNameLower}@${hs}`, 'y', 'EX', exptime)
 
     return user
   }
