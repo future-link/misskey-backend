@@ -1,5 +1,47 @@
 import general from './general'
 
+import { Post, PostLike, UserFollowing } from '../db'
+
+const counters = [
+  {
+    name: 'posts',
+    processor: Post.count,
+    gen_argument: (ret) => { return { user: ret.id } }
+  },
+  {
+    name: 'likes',
+    processor: PostLike.count,
+    gen_argument: ret => { return { user: ret.id } }
+  },
+  {
+    name: 'followees',
+    processor: UserFollowing.count,
+    gen_argument: ret => { return { follower: ret.id } }
+  },
+  {
+    name: 'followers',
+    processor: UserFollowing.count,
+    gen_argument: ret => { return { followee: ret.id } }
+  }
+]
+const count = (ret) => {
+  const done = []
+  ret.counts = {}
+  counters.forEach(counter => {
+    counter.processor(counter.gen_argument(ret)).then(counts => {
+      ret.counts[counter.name] = counts
+      done.push(counter.name)
+    })
+  })
+  // mongooseのtransformはPromise非対応っぽいので無理やり止めたい
+  const tick = 0
+  while (counters.length > done.length) {
+    tick++
+  }
+  console.log(tick)
+  return
+}
+
 export default (doc, ret) => {
   general(doc, ret)
   // 利用されていない・不要な情報
@@ -18,6 +60,7 @@ export default (doc, ret) => {
   delete ret.isVerified
   delete ret.isEmailVerified
   delete ret.wallpaper
+  delete ret.latestPost
   // 他のフィールドと使用用途が被っていて、なおかつ使用されていない情報
   delete ret.description
   // パブリックに開示する必要のない情報
@@ -26,5 +69,12 @@ export default (doc, ret) => {
   // 機密にすべき情報
   delete ret.email
   delete ret.encryptedPassword
-  // 実際に計算を行う情報
+  // その場で計上するため必要のない情報
+  delete ret.postsCount
+  delete ret.likesCount
+  delete ret.likedCount
+  delete ret.followingCount
+  delete ret.followersCount
+  // 計上
+  count(ret)
 }
