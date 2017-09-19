@@ -4,6 +4,14 @@ import mongoose from 'mongoose'
 import app from '../app'
 import { Post, PostLike } from '../../db'
 
+import { getLimitAndSkip } from '../utils'
+
+app.use(route.get('/posts', async (ctx) => {
+  const [limit, skip] = await getLimitAndSkip(ctx)
+  const posts = await Post.find().skip(skip).limit(limit)
+  ctx.body = { posts: posts.map(post => post.toObject()) }
+}))
+
 app.use(route.get('/posts/:id', async (ctx, id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
@@ -13,9 +21,10 @@ app.use(route.get('/posts/:id', async (ctx, id) => {
 
 app.use(route.get('/posts/:id/stargazers', async (ctx, id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no stargazers to the post has given ID.')
+  const [limit, skip] = await getLimitAndSkip(ctx)
   const likes = await PostLike.find({
     post: id
-  }).select({
+  }).skip(skip).limit(limit).select({
     user: 1
   }).populate('user')
   if (!likes) ctx.throw(404, 'there are no stargazers to the post has given ID.')
