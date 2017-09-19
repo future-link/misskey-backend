@@ -15,3 +15,23 @@ export async function getPropWithDefaultAndVerify (object, key, preset, verifier
   e.status = 400
   throw e
 }
+
+export async function getLimitAndSkip (ctx) {
+  const limit = Number.parseInt(await get(ctx.query, 'limit', 100, v => {
+    const n = Number.parseInt(v)
+    if (!n) return false
+    // must not over 200
+    if (n > 200) return false
+    // must not negative
+    if (n <= 0) return false
+    return true
+  }, `query 'limit'`))
+  const skip = Number.parseInt(await get(ctx.query, 'skip', 0, v => {
+    const n = Number.parseInt(v)
+    if (!n) return false
+    // must not negative
+    if (n <= 0) return false
+    return true
+  }, `query 'skip'`))
+  return [limit, skip]
+}

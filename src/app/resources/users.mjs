@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import app from '../app'
 import { User } from '../../db'
 
-import { denyNonAuthorized, getPropWithDefaultAndVerify as get } from '../utils'
+import { denyNonAuthorized, getLimitAndSkip } from '../utils'
 
 const getUserById = async id => {
   let user = null
@@ -20,22 +20,7 @@ const getUserById = async id => {
 }
 
 app.use(route.get('/users', async (ctx) => {
-  const limit = Number.parseInt(await get(ctx.query, 'limit', 100, v => {
-    const n = Number.parseInt(v)
-    if (!n) return false
-    // must not over 200
-    if (n > 200) return false
-    // must not negative
-    if (n <= 0) return false
-    return true
-  }, `query 'limit'`))
-  const skip = Number.parseInt(await get(ctx.query, 'skip', 0, v => {
-    const n = Number.parseInt(v)
-    if (!n) return false
-    // must not negative
-    if (n <= 0) return false
-    return true
-  }, `query 'skip'`))
+  const [limit, skip] = await getLimitAndSkip(ctx)
   const users = await User.find().skip(skip).limit(limit)
   ctx.body = { users: users.map(user => user.toObject()) }
 }))
