@@ -133,7 +133,7 @@ const authenticater = {
     // cache 1hour with redis
     const exptime = 1 * 60 * 60
     redis.set(`mb:auth:basic:${user.id}@${hs}`, 'y', exptime)
-    redis.set(`mb:auth:basic:${user.screenNameLower}@${hs}`, 'y', exptime)
+    redis.set(`mb:auth:basic:@${user.screenNameLower}@${hs}`, 'y', exptime)
 
     return user
   }
