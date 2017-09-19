@@ -5,6 +5,7 @@ import msgpack from 'msgpack-lite'
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
+import util from 'util'
 
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
@@ -125,7 +126,7 @@ const authenticater = {
     const hs = crypto.createHash('sha1').update(secret).digest('hex')
 
     // verify secret by cache
-    if (await redis.get(`mb:auth:basic:${id}@${hs}`)) return user
+    if (await util.promisify(redis.get)(`mb:auth:basic:${id}@${hs}`)) return user
 
     // verify secret by bcrypt
     if (!(await bcrypt.compare(secret, user.encryptedPassword))) return null
