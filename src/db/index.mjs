@@ -18,7 +18,7 @@ import user from './schemas/user'
 import userFollowing from './schemas/user-following'
 
 mongoose.Promise = global.Promise
-const db = mongoose.createConnection(config.mongodb.uri, {
+const db = mongoose.createConnection(config.mongodb, {
   promiseLibrary: global.Promise
 })
 mongooseAutoIncrement.initialize(db)
