@@ -6,17 +6,21 @@ import { User } from '../../db'
 
 import { denyNonAuthorized } from '../utils'
 
-app.use(route.get('/users/@:screenname', async (ctx, screenname) => {
-  const user = await User.findOne({
-    screenNameLower: screenname.toLowerCase()
-  })
-  if (!user) ctx.throw(404, 'there are no users has given screenname.')
-  ctx.body = { user: user.toObject() }
-}))
+const getUserById = async id => {
+  let user = null
+  if (id.startsWith('@')) {
+    user = await User.findOne({
+      screenNameLower: id.substr(1).toLowerCase()
+    })
+  } else {
+    if (!mongoose.Types.ObjectId.isValid(id)) return null
+    user = await User.findById(id)
+  }
+  return user
+}
 
 app.use(route.get('/users/:id', async (ctx, id) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no users has given ID.')
-  const user = await User.findById(id)
+  const user = await getUserById(id)
   if (!user) ctx.throw(404, 'there are no users has given ID.')
   ctx.body = { user: user.toObject() }
 }))
