@@ -60,5 +60,8 @@ export {
   TalkUserHistory,
   TalkGroupHistory,
   User,
-  UserFollowing
+  UserFollowing,
+  // synonyms
+  User as Account,
+  AlbumFile as File
 }

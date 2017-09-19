@@ -1,3 +1,3 @@
+import './accounts'
 import './files'
 import './posts'
-import './users'

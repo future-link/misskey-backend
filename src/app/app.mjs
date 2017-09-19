@@ -10,7 +10,7 @@ import util from 'util'
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
 
-import { User, Post, AlbumFile } from '../db'
+import { Account, Post, File } from '../db'
 import redis from '../redis'
 
 const app = new Koa()
@@ -101,7 +101,7 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-// user authenticate
+// account authenticate
 const schemes = [ 'bearer', 'basic' ]
 const authenticater = {
   // will be with misskey-auth
@@ -110,37 +110,37 @@ const authenticater = {
   basic: async token => {
     const [id, secret] = Buffer.from(token, 'base64').toString().split(':')
 
-    // get user
-    let user
+    // get account
+    let account
     if (id.startsWith('@')) {
-      user = await User.findOne({
+      account = await Account.findOne({
         screenNameLower: id.substr(1).toLowerCase()
       })
     } else {
       if (!mongoose.Types.ObjectId.isValid(id)) return null
-      user = await User.findById(id)
+      account = await Account.findById(id)
     }
-    if (!user) return null
+    if (!account) return null
 
     // calculate hash of password (for caching)
     const hs = crypto.createHash('sha512').update(secret).digest('hex')
 
     // verify secret by cache
-    if (await util.promisify(redis.get.bind(redis))(`mb:auth:basic:${id}@${hs}`)) return user
+    if (await util.promisify(redis.get.bind(redis))(`mb:auth:basic:${id}@${hs}`)) return account
 
     // verify secret by bcrypt
-    if (!(await bcrypt.compare(secret, user.encryptedPassword))) return null
+    if (!(await bcrypt.compare(secret, account.encryptedPassword))) return null
 
     // cache 1hour with redis
     const exptime = 1 * 60 * 60
-    redis.set(`mb:auth:basic:${user.id}@${hs}`, 'y', 'EX', exptime)
-    redis.set(`mb:auth:basic:@${user.screenNameLower}@${hs}`, 'y', 'EX', exptime)
+    redis.set(`mb:auth:basic:${account.id}@${hs}`, 'y', 'EX', exptime)
+    redis.set(`mb:auth:basic:@${account.screenNameLower}@${hs}`, 'y', 'EX', exptime)
 
-    return user
+    return account
   }
 }
 app.use(async (ctx, next) => {
-  ctx.state.user = null
+  ctx.state.account = null
 
   if (!ctx.headers['authorization']) {
     await next()
@@ -159,15 +159,15 @@ app.use(async (ctx, next) => {
     return
   }
 
-  const user = await authenticater[scheme](value)
-  if (!user) {
+  const account = await authenticater[scheme](value)
+  if (!account) {
     ctx.status = 400
     ctx.body = {
       message: 'incorrect authentication information specified.'
     }
     return
   }
-  ctx.state.user = user
+  ctx.state.account = account
   await next()
 })
 
@@ -176,9 +176,9 @@ app.use(route.get('/', async (ctx) => {
   ctx.body = {
     hash,
     counter: {
-      posts: await Post.count({}),
-      files: await AlbumFile.count({}),
-      users: await User.count({})
+      accounts: await Account.count({}),
+      files: await File.count({}),
+      posts: await Post.count({})
     }
   }
 }))

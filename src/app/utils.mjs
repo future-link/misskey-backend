@@ -1,5 +1,5 @@
 export async function denyNonAuthorized (ctx) {
-  if (!ctx.state.user) ctx.throw(401, 'must authenticate to request this endpoint.')
+  if (!ctx.state.account) ctx.throw(401, 'must authenticate to request this endpoint.')
 }
 
 export async function getPropWithDefaultAndVerify (object, key, preset, verifier = null, pne = null) {
