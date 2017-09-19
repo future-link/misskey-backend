@@ -2,9 +2,13 @@ import Koa from 'koa'
 import route from 'koa-route'
 import cluster from 'cluster'
 import msgpack from 'msgpack-lite'
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
 
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
+
+import { User } from '../db'
 
 const app = new Koa()
 const logger = new Logger(cluster.isWorker ? `app#${cluster.worker.id}` : 'app')
@@ -91,6 +95,61 @@ app.use(async (ctx, next) => {
 // CORS
 app.use(async (ctx, next) => {
   ctx.set('Access-Control-Allow-Origin', '*')
+  await next()
+})
+
+// user authenticate
+const schemes = [ 'bearer', 'basic' ]
+const authenticater = {
+  // will be with misskey-auth
+  bearer: async token => null,
+  // basic for the time being, will be removed
+  basic: async token => {
+    const [id, secret] = Buffer.from(token, 'base64').toString().split(':')
+    let user
+    // get user
+    if (id.startsWith('@')) {
+      user = await User.findOne({
+        screenNameLower: id.substr(1).toLowerCase()
+      })
+    } else {
+      if (!mongoose.Types.ObjectId.isValid(id)) return null
+      user = await User.findById(id)
+    }
+    if (!user) return null
+    if (!(await bcrypt.compare(secret, user.encryptedPassword))) return null
+    return user
+  }
+}
+app.use(async (ctx, next) => {
+  ctx.state.user = null
+
+  if (!ctx.headers['authorization']) {
+    await next()
+    return
+  }
+
+  const as = ctx.headers['authorization'].split(' ')
+  const scheme = as.shift().toLowerCase()
+  const value = as.join(' ')
+
+  if (!schemes.includes(scheme)) {
+    ctx.status = 400
+    ctx.body = {
+      message: 'unsupported authorization scheme specified.'
+    }
+    return
+  }
+
+  const user = await authenticater[scheme](value)
+  if (!user) {
+    ctx.status = 400
+    ctx.body = {
+      message: 'incorrect authentication information specified.'
+    }
+    return
+  }
+  ctx.state.user = user
   await next()
 })
 
