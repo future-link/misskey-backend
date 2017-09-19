@@ -4,11 +4,13 @@ import cluster from 'cluster'
 import msgpack from 'msgpack-lite'
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
 
 import { User } from '../db'
+import redis from '../redis'
 
 const app = new Koa()
 const logger = new Logger(cluster.isWorker ? `app#${cluster.worker.id}` : 'app')
@@ -106,8 +108,9 @@ const authenticater = {
   // basic for the time being, will be removed
   basic: async token => {
     const [id, secret] = Buffer.from(token, 'base64').toString().split(':')
-    let user
+
     // get user
+    let user
     if (id.startsWith('@')) {
       user = await User.findOne({
         screenNameLower: id.substr(1).toLowerCase()
@@ -117,7 +120,21 @@ const authenticater = {
       user = await User.findById(id)
     }
     if (!user) return null
+
+    // calculate hash of password (for caching)
+    const hs = crypto.createHash('sha1').update(secret).digest('hex')
+
+    // verify secret by cache
+    if (await redis.get(`mb:auth:basic:${id}@${hs}`)) return user
+
+    // verify secret by bcrypt
     if (!(await bcrypt.compare(secret, user.encryptedPassword))) return null
+
+    // cache 1hour with redis
+    const exptime = 1 * 60 * 60
+    redis.set(`mb:auth:basic:${user.id}@${hs}`, 'y', exptime)
+    redis.set(`mb:auth:basic:${user.screenNameLower}@${hs}`, 'y', exptime)
+
     return user
   }
 }
