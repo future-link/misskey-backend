@@ -10,7 +10,7 @@ import util from 'util'
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
 
-import { User } from '../db'
+import { User, Post, AlbumFile } from '../db'
 import redis from '../redis'
 
 const app = new Koa()
@@ -174,7 +174,12 @@ app.use(async (ctx, next) => {
 // status
 app.use(route.get('/', async (ctx) => {
   ctx.body = {
-    hash
+    hash,
+    counter: {
+      posts: await Post.count({}),
+      files: await AlbumFile.count({}),
+      users: await User.count({})
+    }
   }
 }))
 
