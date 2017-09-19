@@ -123,7 +123,7 @@ const authenticater = {
     if (!user) return null
 
     // calculate hash of password (for caching)
-    const hs = crypto.createHash('sha1').update(secret).digest('hex')
+    const hs = crypto.createHash('sha512').update(secret).digest('hex')
 
     // verify secret by cache
     if (await util.promisify(redis.get.bind(redis))(`mb:auth:basic:${id}@${hs}`)) return user
