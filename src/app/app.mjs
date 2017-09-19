@@ -1,7 +1,7 @@
 import Koa from 'koa'
 import route from 'koa-route'
 import cluster from 'cluster'
-import msgpack from 'msgpack'
+import msgpack from 'msgpack-lite'
 
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
@@ -29,7 +29,7 @@ const formats = [ 'json', 'msgpack' ]
 const formatters = {
   msgpack: {
     mime: 'application/x-msgpack',
-    processor: msgpack.pack
+    processor: msgpack.encode
   }
 }
 app.use(async (ctx, next) => {
