@@ -1,47 +1,5 @@
 import general from './general'
 
-import { Post, PostLike, UserFollowing } from '../db'
-
-const count = (ret) => {
-  const counters = [
-    {
-      name: 'posts',
-      processor: Post.count.bind(Post),
-      gen_argument: (ret) => { return { user: ret.id } }
-    },
-    {
-      name: 'likes',
-      processor: PostLike.count.bind(PostLike),
-      gen_argument: ret => { return { user: ret.id } }
-    },
-    {
-      name: 'followees',
-      processor: UserFollowing.count.bind(UserFollowing),
-      gen_argument: ret => { return { follower: ret.id } }
-    },
-    {
-      name: 'followers',
-      processor: UserFollowing.count.bind(UserFollowing),
-      gen_argument: ret => { return { followee: ret.id } }
-    }
-  ]
-  const done = []
-  ret.counts = {}
-  counters.forEach(counter => {
-    counter.processor(counter.gen_argument(ret)).then(counts => {
-      ret.counts[counter.name] = counts
-      done.push(counter.name)
-    })
-  })
-  // mongooseのtransformはPromise非対応っぽいので無理やり止めたい
-  let tick = 0
-  while (counters.length > done.length) {
-    tick++
-  }
-  console.log(tick)
-  return
-}
-
 export default (doc, ret) => {
   general(doc, ret)
   // 利用されていない・不要な情報
@@ -75,6 +33,4 @@ export default (doc, ret) => {
   delete ret.likedCount
   delete ret.followingCount
   delete ret.followersCount
-  // 計上
-  count(ret)
 }
