@@ -2,29 +2,29 @@ import general from './general'
 
 import { Post, PostLike, UserFollowing } from '../db'
 
-const counters = [
-  {
-    name: 'posts',
-    processor: Post.count,
-    gen_argument: (ret) => { return { user: ret.id } }
-  },
-  {
-    name: 'likes',
-    processor: PostLike.count,
-    gen_argument: ret => { return { user: ret.id } }
-  },
-  {
-    name: 'followees',
-    processor: UserFollowing.count,
-    gen_argument: ret => { return { follower: ret.id } }
-  },
-  {
-    name: 'followers',
-    processor: UserFollowing.count,
-    gen_argument: ret => { return { followee: ret.id } }
-  }
-]
 const count = (ret) => {
+  const counters = [
+    {
+      name: 'posts',
+      processor: Post.count,
+      gen_argument: (ret) => { return { user: ret.id } }
+    },
+    {
+      name: 'likes',
+      processor: PostLike.count,
+      gen_argument: ret => { return { user: ret.id } }
+    },
+    {
+      name: 'followees',
+      processor: UserFollowing.count,
+      gen_argument: ret => { return { follower: ret.id } }
+    },
+    {
+      name: 'followers',
+      processor: UserFollowing.count,
+      gen_argument: ret => { return { followee: ret.id } }
+    }
+  ]
   const done = []
   ret.counts = {}
   counters.forEach(counter => {
