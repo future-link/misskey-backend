@@ -34,7 +34,7 @@ const count = (ret) => {
     })
   })
   // mongooseのtransformはPromise非対応っぽいので無理やり止めたい
-  const tick = 0
+  let tick = 0
   while (counters.length > done.length) {
     tick++
   }
