@@ -6,22 +6,22 @@ const count = (ret) => {
   const counters = [
     {
       name: 'posts',
-      processor: Post.count,
+      processor: Post.count.bind(Post),
       gen_argument: (ret) => { return { user: ret.id } }
     },
     {
       name: 'likes',
-      processor: PostLike.count,
+      processor: PostLike.count.bind(PostLike),
       gen_argument: ret => { return { user: ret.id } }
     },
     {
       name: 'followees',
-      processor: UserFollowing.count,
+      processor: UserFollowing.count.bind(UserFollowing),
       gen_argument: ret => { return { follower: ret.id } }
     },
     {
       name: 'followers',
-      processor: UserFollowing.count,
+      processor: UserFollowing.count.bind(UserFollowing),
       gen_argument: ret => { return { followee: ret.id } }
     }
   ]
