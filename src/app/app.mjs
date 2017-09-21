@@ -176,9 +176,9 @@ app.use(route.get('/', async (ctx) => {
   ctx.body = {
     hash,
     counts: {
-      accounts: await Account.count({}),
-      files: await File.count({}),
-      posts: await Post.count({})
+      accounts: await Account.count(),
+      files: await File.count(),
+      posts: await Post.count()
     }
   }
 }))
