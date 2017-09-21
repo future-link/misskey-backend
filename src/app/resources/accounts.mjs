@@ -46,8 +46,8 @@ app.use(route.get('/accounts/:id/status', async (ctx, id) => {
       counts: {
         posts: await Post.count({user: uoid}),
         likes: await PostLike.count({user: uoid}),
-        followees: await UserFollowing.count({follower: uoid}),
-        followers: await UserFollowing.count({followee: uoid})
+        followees: await AccountFollowing.count({follower: uoid}),
+        followers: await AccountFollowing.count({followee: uoid})
       }
     }
   }
@@ -65,8 +65,8 @@ app.use(route.get('/account/status', async (ctx) => {
       counts: {
         posts: await Post.count({user: ctx.state.account.id}),
         likes: await PostLike.count({user: ctx.state.account.id}),
-        followees: await UserFollowing.count({follower: ctx.state.account.id}),
-        followers: await UserFollowing.count({followee: ctx.state.account.id})
+        followees: await AccountFollowing.count({follower: ctx.state.account.id}),
+        followers: await AccountFollowing.count({followee: ctx.state.account.id})
       }
     }
   }
