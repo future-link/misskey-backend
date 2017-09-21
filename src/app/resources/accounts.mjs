@@ -57,3 +57,17 @@ app.use(route.get('/account', async (ctx) => {
   await denyNonAuthorized(ctx)
   ctx.body = { account: ctx.state.account.toObject() }
 }))
+
+app.use(route.get('/account/status', async (ctx) => {
+  await denyNonAuthorized(ctx)
+  ctx.body = {
+    status: {
+      counts: {
+        posts: await Post.count({user: ctx.state.account.id}),
+        likes: await PostLike.count({user: ctx.state.account.id}),
+        followees: await UserFollowing.count({follower: ctx.state.account.id}),
+        followers: await UserFollowing.count({followee: ctx.state.account.id})
+      }
+    }
+  }
+}))
