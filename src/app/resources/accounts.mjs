@@ -19,6 +19,20 @@ const getAccountById = async id => {
   return account
 }
 
+// OId: objectId
+const getAccountStatusByOId = async oid => {
+  return {
+    status: {
+      counts: {
+        posts: await Post.count({user: oid}),
+        likes: await PostLike.count({user: oid}),
+        followees: await AccountFollowing.count({follower: oid}),
+        followers: await AccountFollowing.count({followee: oid})
+      }
+    }
+  }
+}
+
 app.use(route.get('/accounts', async (ctx) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   const accounts = await Account.find().skip(skip).limit(limit)
@@ -41,16 +55,7 @@ app.use(route.get('/accounts/:id/status', async (ctx, id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no accounts has given ID.')
     uoid = id
   }
-  ctx.body = {
-    status: {
-      counts: {
-        posts: await Post.count({user: uoid}),
-        likes: await PostLike.count({user: uoid}),
-        followees: await AccountFollowing.count({follower: uoid}),
-        followers: await AccountFollowing.count({followee: uoid})
-      }
-    }
-  }
+  ctx.body = await getAccountStatusByOId(uoid)
 }))
 
 app.use(route.get('/account', async (ctx) => {
@@ -60,14 +65,5 @@ app.use(route.get('/account', async (ctx) => {
 
 app.use(route.get('/account/status', async (ctx) => {
   await denyNonAuthorized(ctx)
-  ctx.body = {
-    status: {
-      counts: {
-        posts: await Post.count({user: ctx.state.account.id}),
-        likes: await PostLike.count({user: ctx.state.account.id}),
-        followees: await AccountFollowing.count({follower: ctx.state.account.id}),
-        followers: await AccountFollowing.count({followee: ctx.state.account.id})
-      }
-    }
-  }
+  ctx.body = await getAccountStatusByOId(ctx.state.account.id)
 }))
