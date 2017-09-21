@@ -128,7 +128,7 @@ const authenticater = {
       const srhsa = srhs.split('+')
       const salt = srhsa.shift()
       const goal = srhsa.join('+')
-      if (crypto.createHash('sha512').update(`${salt}+${secret}`) === goal) return account
+      if (crypto.createHash('sha512').update(`${salt}+${secret}`).toString('hex') === goal) return account
     }
 
     // verify secret by bcrypt
@@ -136,7 +136,7 @@ const authenticater = {
 
     // cache 1hour with redis
     const crsalt = crypto.randomBytes(16).toString('hex')
-    const crhs = crypto.createHash('sha512').update(`${crsalt}+${secret}`)
+    const crhs = crypto.createHash('sha512').update(`${crsalt}+${secret}`).toString('hex')
     const exptime = 1 * 60 * 60
     redis.set(`mb:auth:basic:${account.id}`, `${crsalt}+${crhs}`, 'EX', exptime)
 
