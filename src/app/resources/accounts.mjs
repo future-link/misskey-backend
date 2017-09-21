@@ -2,7 +2,7 @@ import route from 'koa-route'
 import mongoose from 'mongoose'
 
 import app from '../app'
-import { Account, AccountFollowing, PostLike } from '../../db'
+import { Account, AccountFollowing, Post, PostLike } from '../../db'
 
 import { denyNonAuthorized, getLimitAndSkip } from '../utils'
 
