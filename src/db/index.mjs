@@ -63,5 +63,6 @@ export {
   UserFollowing,
   // synonyms
   User as Account,
+  UserFollowing as AccountFollowing,
   AlbumFile as File
 }
