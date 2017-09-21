@@ -138,7 +138,7 @@ const authenticater = {
     const crsalt = crypto.randomBytes(16).toString('hex')
     const crhs = crypto.createHash('sha512').update(`${crsalt}+${secret}`)
     const exptime = 1 * 60 * 60
-    redis.set(`mb:auth:basic:${account.id}`, `${crsalt}:${crhs}`, 'EX', exptime)
+    redis.set(`mb:auth:basic:${account.id}`, `${crsalt}+${crhs}`, 'EX', exptime)
 
     return account
   }
