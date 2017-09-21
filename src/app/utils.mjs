@@ -9,11 +9,7 @@ export async function getPropWithDefaultAndVerify (object, key, preset, verifier
   if (vr.constructor.name !== 'Promise' && vr) return object[key]
   if (await vr) return object[key]
   // verify error (pne: prop name in error)
-  const e = new Error(`${pne || key} is invalid.`)
-  // mimic ctx.throw's error
-  e.expose = true
-  e.status = 400
-  throw e
+  throw new ContextErrorMimic(400, `${pne || key} is invalid.`)
 }
 
 export async function getLimitAndSkip (ctx) {
@@ -34,4 +30,13 @@ export async function getLimitAndSkip (ctx) {
     return true
   }, `query 'skip'`))
   return [limit, skip]
+}
+
+// mimic ctx.throw's error
+export class ContextErrorMimic extends Error {
+  constructor (status, ...args) {
+    super(args)
+    this.expose = true
+    this.status = status
+  }
 }
