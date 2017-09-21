@@ -46,16 +46,9 @@ app.use(route.get('/accounts/:id', async (ctx, id) => {
 }))
 
 app.use(route.get('/accounts/:id/status', async (ctx, id) => {
-  let uoid
-  if (id.startsWith('@')) {
-    const account = await getAccountById(id)
-    if (!account) ctx.throw(404, 'there are no accounts has given ID.')
-    uoid = account.id
-  } else {
-    if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no accounts has given ID.')
-    uoid = id
-  }
-  ctx.body = await getAccountStatusByOId(uoid)
+  const account = await getAccountById(id)
+  if (!account) ctx.throw(404, 'there are no accounts has given ID.')
+  ctx.body = await getAccountStatusByOId(account.id)
 }))
 
 app.use(route.get('/account', async (ctx) => {
