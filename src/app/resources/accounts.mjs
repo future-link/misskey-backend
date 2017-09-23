@@ -61,6 +61,22 @@ app.use(route.get('/account/status', async (ctx) => {
   ctx.body = await getAccountStatusByOId(ctx.state.account.id)
 }))
 
+app.use(route.get('/accounts/:id/posts', async (ctx, id) => {
+  const [limit, skip] = await getLimitAndSkip(ctx)
+  if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no accounts has given ID.')
+  const account = await getAccountById(id)
+  if (!account) ctx.throw(404, 'there are no accounts has given ID.')
+  const posts = await Post.find({user: account.id}).skip(skip).limit(limit)
+  ctx.body = { posts: posts.map(post => post.toObject()) }
+}))
+
+app.use(route.get('/account/posts', async (ctx) => {
+  const [limit, skip] = await getLimitAndSkip(ctx)
+  await denyNonAuthorized(ctx)
+  const posts = await Post.find({user: ctx.state.account.id}).skip(skip).limit(limit)
+  ctx.body = { posts: posts.map(post => post.toObject()) }
+}))
+
 app.use(route.delete('/account/posts/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
