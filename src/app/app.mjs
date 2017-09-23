@@ -34,6 +34,18 @@ app.use(async (ctx, next) => {
   logger.detail(`- responded in ${duration} ms`)
 })
 
+// CORS
+app.use(async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Origin', '*')
+  if (ctx.method === 'OPTIONS' && ctx.header['access-control-request-method']) {
+    ctx.set('Access-Control-Allow-Method', 'GET, POST, PUT, DELETE')
+    ctx.set('Access-Control-Allow-Headers', 'Content-Type')
+    ctx.status = 204
+    return
+  }
+  await next()
+})
+
 // support `.ext`
 const formats = [ 'json', 'msgpack' ]
 const formatters = {
@@ -88,12 +100,6 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
   await next()
   if (!ctx.body && ctx.status === 404) ctx.throw(404, 'there are no contents.')
-})
-
-// CORS
-app.use(async (ctx, next) => {
-  ctx.set('Access-Control-Allow-Origin', '*')
-  await next()
 })
 
 // account authenticate
