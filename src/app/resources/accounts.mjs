@@ -80,7 +80,8 @@ app.use(route.delete('/account/posts/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
-  if (!post || post.user !== ctx.state.account.id) ctx.throw(404, 'there are no posts has given ID.')
+  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  if (!post.user.equals(ctx.state.account.id)) ctx.throw(403, `must not try to delete other account's post`)
   await post.remove()
   ctx.status = 204
 }))
