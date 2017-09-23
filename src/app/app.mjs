@@ -87,12 +87,7 @@ app.use(async (ctx, next) => {
 // custom error for 404
 app.use(async (ctx, next) => {
   await next()
-  if (!ctx.body && ctx.status === 404) {
-    ctx.status = 404
-    ctx.body = {
-      message: 'there is no contents.'
-    }
-  }
+  if (!ctx.body && ctx.status === 404) ctx.throw(404, 'there are no contents.')
 })
 
 // CORS
