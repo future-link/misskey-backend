@@ -37,6 +37,7 @@ const getAccountStatusByOId = async oid => {
 const genSynonymRedirector = (prefix) => {
   return (function (...rest) {
     const ctx = rest.shift()
+    rest.pop() // next
     const path = rest.pop()
     ctx.status = 307
     ctx.set('location', `${config.root}${prefix}/${path}`)
