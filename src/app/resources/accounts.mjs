@@ -60,3 +60,39 @@ app.use(route.get('/account/status', async (ctx) => {
   await denyNonAuthorized(ctx)
   ctx.body = await getAccountStatusByOId(ctx.state.account.id)
 }))
+
+app.use(route.delete('/account/posts/:id', async (ctx, id) => {
+  await denyNonAuthorized(ctx)
+  if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
+  const post = await Post.findById(id)
+  if (!post || post.user !== ctx.state.account.id) ctx.throw(404, 'there are no posts has given ID.')
+  await post.remove()
+  ctx.status = 204
+}))
+
+app.use(route.put('/account/stars/:id', async (ctx, id) => {
+  await denyNonAuthorized(ctx)
+  if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
+  const post = await Post.findById(id)
+  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  const content = {
+    post: post.id,
+    user: ctx.state.account.id }
+  if (await PostLike.findOne(content)) ctx.throw(409, 'already starred.')
+  const star = new PostLike(content)
+  await star.save()
+  ctx.status = 204
+}))
+
+app.use(route.delete('/account/stars/:id', async (ctx, id) => {
+  await denyNonAuthorized(ctx)
+  if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
+  const post = await Post.findById(id)
+  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  const star = await PostLike.findOne({
+    post: post.id,
+    user: ctx.state.account.id })
+  if (!star) ctx.throw(404, 'there are no stars to the post has given ID.')
+  await star.remove()
+  ctx.status = 204
+}))
