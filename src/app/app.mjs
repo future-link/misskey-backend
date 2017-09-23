@@ -38,7 +38,7 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
   ctx.set('Access-Control-Allow-Origin', '*')
   if (ctx.method === 'OPTIONS' && ctx.header['access-control-request-method']) {
-    ctx.set('Access-Control-Allow-Method', 'GET, POST, PUT, DELETE')
+    ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     ctx.set('Access-Control-Allow-Headers', 'Content-Type')
     ctx.status = 204
     return
