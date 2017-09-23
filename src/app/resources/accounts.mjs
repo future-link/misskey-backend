@@ -63,7 +63,6 @@ app.use(route.get('/account/status', async (ctx) => {
 
 app.use(route.get('/accounts/:id/posts', async (ctx, id) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
-  if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no accounts has given ID.')
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
   const posts = await Post.find({user: account.id}).skip(skip).limit(limit)
