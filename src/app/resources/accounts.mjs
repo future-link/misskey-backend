@@ -2,6 +2,7 @@ import route from 'koa-route'
 import mongoose from 'mongoose'
 
 import app from '../app'
+import config from '../../config'
 import { Account, AccountFollowing, Post, PostLike } from '../../db'
 
 import { denyNonAuthorized, getLimitAndSkip } from '../utils'
@@ -31,6 +32,15 @@ const getAccountStatusByOId = async oid => {
       }
     }
   }
+}
+
+const genSynonymRedirector = (prefix) => {
+  return (function (...rest) {
+    const ctx = rest.shift()
+    const path = rest.pop()
+    ctx.status = 307
+    ctx.set('location', `${config.root}${prefix}/${path}`)
+  }).bind({prefix})
 }
 
 app.use(route.get('/accounts', async (ctx) => {
@@ -86,6 +96,9 @@ app.use(route.delete('/account/posts/:id', async (ctx, id) => {
   ctx.status = 204
 }))
 
+app.use(route.all('/accounts/:id/posts/(.*)', genSynonymRedirector('/posts')))
+app.use(route.all('/account/posts/(.*)', genSynonymRedirector('/posts')))
+
 app.use(route.put('/account/stars/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
@@ -112,3 +125,9 @@ app.use(route.delete('/account/stars/:id', async (ctx, id) => {
   await star.remove()
   ctx.status = 204
 }))
+
+app.use(route.all('/accounts/:id/followees/(.*)', genSynonymRedirector('/accounts')))
+app.use(route.all('/account/followees/(.*)', genSynonymRedirector('/accounts')))
+
+app.use(route.all('/accounts/:id/followers/(.*)', genSynonymRedirector('/accounts')))
+app.use(route.all('/account/followers/(.*)', genSynonymRedirector('/accounts')))
