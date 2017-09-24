@@ -6,7 +6,7 @@ import config from '../../config'
 import { Account, AccountFollowing, Post, PostLike } from '../../db'
 import { transformAccount, transformPost } from '../../transformers'
 
-import { denyNonAuthorized, getLimitAndSkip, applyPromiseFnToArrayWithOrder } from '../utils'
+import { denyNonAuthorized, getLimitAndSkip } from '../utils'
 
 const getAccountById = async id => {
   let account = null
@@ -48,7 +48,7 @@ const genSynonymRedirector = (prefix) => {
 app.use(route.get('/accounts', async (ctx) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   const accounts = await Account.find().skip(skip).limit(limit)
-  ctx.body = { accounts: await applyPromiseFnToArrayWithOrder(accounts, transformAccount) }
+  ctx.body = { accounts: await Promise.all(accounts.map(v => transformAccount(v))) }
 }))
 
 app.use(route.get('/accounts/:id', async (ctx, id) => {
@@ -78,14 +78,14 @@ app.use(route.get('/accounts/:id/posts', async (ctx, id) => {
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
   const posts = await Post.find({user: account.id}).skip(skip).limit(limit)
-  ctx.body = { posts: await applyPromiseFnToArrayWithOrder(posts, transformPost) }
+  ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 }))
 
 app.use(route.get('/account/posts', async (ctx) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   await denyNonAuthorized(ctx)
   const posts = await Post.find({user: ctx.state.account.id}).skip(skip).limit(limit)
-  ctx.body = { posts: await applyPromiseFnToArrayWithOrder(posts, transformPost) }
+  ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 }))
 
 app.use(route.delete('/account/posts/:id', async (ctx, id) => {

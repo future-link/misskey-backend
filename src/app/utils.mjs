@@ -40,13 +40,3 @@ export class ContextErrorMimic extends Error {
     this.status = status
   }
 }
-
-export async function applyPromiseFnToArrayWithOrder (arr, fn) {
-  const promises = arr.map((elem, order) => {
-    return (async () => [order, await fn(elem)])()
-  })
-  const resolved = await Promise.all(promises)
-  const response = []
-  resolved.forEach(elem => { response[elem[0]] = elem[1] })
-  return response
-}

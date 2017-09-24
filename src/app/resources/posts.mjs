@@ -5,13 +5,13 @@ import app from '../app'
 import { Post, PostLike } from '../../db'
 import { transformPost, transformAccount } from '../../transformers'
 
-import { getLimitAndSkip, denyNonAuthorized, applyPromiseFnToArrayWithOrder } from '../utils'
+import { getLimitAndSkip, denyNonAuthorized } from '../utils'
 import redis from '../../redis'
 
 app.use(route.get('/posts', async (ctx) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   const posts = await Post.find().skip(skip).limit(limit)
-  ctx.body = { posts: await applyPromiseFnToArrayWithOrder(posts, transformPost) }
+  ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 }))
 
 app.use(route.get('/posts/:id', async (ctx, id) => {
@@ -32,5 +32,5 @@ app.use(route.get('/posts/:id/stargazers', async (ctx, id) => {
   if (!likes) ctx.throw(404, 'there are no stargazers to the post has given ID.')
   const stargazers = []
   likes.forEach(like => { stargazers.push(like.user) })
-  ctx.body = { stargazers: applyPromiseFnToArrayWithOrder(stargazers, transformAccount) }
+  ctx.body = { stargazers: Promise.all(stargazers.map(v => transformAccount(v))) }
 }))
