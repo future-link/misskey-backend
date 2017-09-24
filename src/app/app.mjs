@@ -1,11 +1,14 @@
 import Koa from 'koa'
 import route from 'koa-route'
 import cluster from 'cluster'
-import msgpack from 'msgpack-lite'
 import mongoose from 'mongoose'
+
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import util from 'util'
+
+import msgpack from 'msgpack-lite'
+import yaml from 'js-yaml'
 
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
@@ -47,11 +50,15 @@ app.use(async (ctx, next) => {
 })
 
 // support `.ext`
-const formats = [ 'json', 'msgpack' ]
+const formats = [ 'json', 'msgpack', 'yaml' ]
 const formatters = {
   msgpack: {
     mime: 'application/x-msgpack',
     processor: msgpack.encode
+  },
+  yaml: {
+    mime: 'text/vnd.yaml',
+    processor: yaml.safeDump
   }
 }
 app.use(async (ctx, next) => {
