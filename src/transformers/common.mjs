@@ -7,7 +7,7 @@ export default (raw, Model = null) => {
   delete object.__v
   delete object._id
   // transform 'ObjectId' object to string
-  object.entries().forEach(([k, v]) => {
+  Object.entries(object).forEach(([k, v]) => {
     if (v instanceof mongoose.Types.ObjectId) object[k] = v.toString()
   })
   return object
