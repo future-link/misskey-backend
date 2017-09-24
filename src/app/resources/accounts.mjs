@@ -136,7 +136,7 @@ app.use(route.delete('/account/stars/:id', async (ctx, id) => {
 
   --post.likesCount
 
-  await Promise.all(star.delete(), post.save())
+  await Promise.all(star.remove(), post.save())
 
   ctx.status = 204
 }))
