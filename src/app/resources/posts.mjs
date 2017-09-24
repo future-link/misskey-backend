@@ -32,5 +32,5 @@ app.use(route.get('/posts/:id/stargazers', async (ctx, id) => {
   if (!likes) ctx.throw(404, 'there are no stargazers to the post has given ID.')
   const stargazers = []
   likes.forEach(like => { stargazers.push(like.user) })
-  ctx.body = { stargazers: Promise.all(stargazers.map(v => transformAccount(v))) }
+  ctx.body = { stargazers: await Promise.all(stargazers.map(v => transformAccount(v))) }
 }))
