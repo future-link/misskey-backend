@@ -1,2 +1,10 @@
-export { default as transformUser } from './user'
-export { default as transformGeneral } from './general'
+import transformAccount from './account'
+import transformGeneral from './general'
+
+export {
+  transformAccount,
+  transformGeneral,
+
+  transformGeneral as transformPost,
+  transformGeneral as transformFile
+}
