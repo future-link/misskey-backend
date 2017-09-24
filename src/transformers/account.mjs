@@ -30,7 +30,7 @@ export default async raw => {
   delete target.email
   delete target.encryptedPassword
   // その場で計上するため必要のない情報
-  delete target.target.Count
+  delete target.postsCount
   delete target.likesCount
   delete target.likedCount
   delete target.followingCount
