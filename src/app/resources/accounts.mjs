@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 
 import app from '../app'
 import config from '../../config'
-import { Account, AccountFollowing, Post, PostLike } from '../../db'
+import { Account, AccountFollowing, Post, PostLike, Status } from '../../db'
 
 import { transformAccount, transformPost } from '../transformers'
 import { denyNonAuthorized, getLimitAndSkip } from '../utils'
@@ -112,7 +112,7 @@ app.use(route.put('/account/stars/:id', async (ctx, id) => {
   const content = {
     post: id,
     user: ctx.state.account.id }
-  const [post, starState] = await Promise.all([Post.findById(id), PostLike.findOne(content)])
+  const [post, starState] = await Promise.all([Status.findById(id), PostLike.findOne(content)])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
   if (starState) ctx.throw(409, 'already starred.')
 
@@ -128,7 +128,7 @@ app.use(route.delete('/account/stars/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
-  const [post, star] = await Promise.all([Post.findById(id), PostLike.findOne({
+  const [post, star] = await Promise.all([Status.findById(id), PostLike.findOne({
     post: id,
     user: ctx.state.account.id })])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
