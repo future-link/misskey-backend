@@ -1,14 +1,6 @@
 import mongoose from 'mongoose'
 
-import { transformUser } from '../../transformers'
-
 const Schema = mongoose.Schema
-
-const userSchemaOption = {
-  toObject: {
-    transform: transformUser
-  }
-}
 
 export const schema = new Schema({
   avatar: {
@@ -157,6 +149,6 @@ export const schema = new Schema({
     type: String,
     required: false,
     default: null }
-}, userSchemaOption)
+})
 
 export default db => db.model('User', schema, 'Users')

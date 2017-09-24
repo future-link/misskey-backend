@@ -1,8 +1,6 @@
 import mongoose from 'mongoose'
 import mongooseAutoIncrement from 'mongoose-auto-increment'
 
-import { commonSchemaOption } from '../common'
-
 const Schema = mongoose.Schema
 
 export const schema = new Schema({
@@ -32,7 +30,7 @@ export const schema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'User' }
-}, commonSchemaOption)
+})
 
 export default db => {
   schema.plugin(mongooseAutoIncrement.plugin, {

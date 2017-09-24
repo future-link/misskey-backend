@@ -1,8 +1,6 @@
 import mongoose from 'mongoose'
 import mongooseAutoIncrement from 'mongoose-auto-increment'
 
-import { commonSchemaOption } from '../common'
-
 const Schema = mongoose.Schema
 
 const generalSchemaObject = {
@@ -68,7 +66,7 @@ const nonRepostSchemaObject = Object.assign({
     type: String,
     required: false,
     default: null }
-}, generalSchemaObject)
+})
 
 const enableAutoincrement = (db, schema) => {
   schema.plugin(mongooseAutoIncrement.plugin, {
@@ -77,13 +75,13 @@ const enableAutoincrement = (db, schema) => {
   })
 }
 
-export const PostSchema = new Schema(generalSchemaObject, commonSchemaOption)
+export const PostSchema = new Schema(generalSchemaObject)
 export const StatusSchema = new Schema(Object.assign({
   type: {
     type: String,
     required: true,
     default: 'status' }
-}, nonRepostSchemaObject), commonSchemaOption)
+}, nonRepostSchemaObject))
 export const ReplySchema = new Schema(Object.assign({
   inReplyToPost: {
     type: Schema.Types.ObjectId,
@@ -94,7 +92,7 @@ export const ReplySchema = new Schema(Object.assign({
     type: String,
     required: true,
     default: 'reply' }
-}, nonRepostSchemaObject), commonSchemaOption)
+}, nonRepostSchemaObject))
 export const RepostSchema = new Schema(Object.assign({
   post: {
     type: Schema.Types.ObjectId,
@@ -104,7 +102,7 @@ export const RepostSchema = new Schema(Object.assign({
     type: String,
     required: true,
     default: 'repost' }
-}, generalSchemaObject), commonSchemaOption)
+}, generalSchemaObject))
 
 const post = db => db.model('Post', PostSchema, 'Posts')
 const status = db => {
