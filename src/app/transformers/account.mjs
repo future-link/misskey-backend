@@ -2,6 +2,8 @@ import common from './common'
 
 import { Account } from '../db'
 
+import { getAccountStatusByAccountInstance } from '../resources/accounts'
+
 export default async raw => {
   const target = common(raw, Account)
   // 利用されていない・不要な情報
@@ -29,11 +31,13 @@ export default async raw => {
   // 機密にすべき情報
   delete target.email
   delete target.encryptedPassword
-  // その場で計上するため必要のない情報
+  // 配置を変更するため一旦削除する情報
   delete target.postsCount
   delete target.likesCount
   delete target.likedCount
   delete target.followingCount
   delete target.followersCount
+  // /status の内容は統合される
+  Object.assign(target, getAccountStatusByAccountInstance(raw))
   return target
 }

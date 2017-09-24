@@ -3,8 +3,8 @@ import mongoose from 'mongoose'
 
 import app from '../app'
 import { Post, PostLike } from '../../db'
-import { transformPost, transformAccount } from '../../transformers'
 
+import { transformPost, transformAccount } from '../transformers'
 import { getLimitAndSkip, denyNonAuthorized } from '../utils'
 import redis from '../../redis'
 

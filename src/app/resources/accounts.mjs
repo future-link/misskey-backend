@@ -4,9 +4,9 @@ import mongoose from 'mongoose'
 import app from '../app'
 import config from '../../config'
 import { Account, AccountFollowing, Post, PostLike } from '../../db'
-import { transformAccount, transformPost } from '../../transformers'
 
-import { denyNonAuthorized, getLimitAndSkip, resolveAllInObject } from '../utils'
+import { transformAccount, transformPost } from '../transformers'
+import { denyNonAuthorized, getLimitAndSkip } from '../utils'
 
 const getAccountById = async id => {
   let account = null
@@ -21,16 +21,15 @@ const getAccountById = async id => {
   return account
 }
 
-// OId: objectId
-const getAccountStatusByOId = async oid => {
+export const getAccountStatusByAccountInstance = account => {
   return {
     status: {
-      counts: await resolveAllInObject({
-        posts: Post.count({user: oid}),
-        likes: PostLike.count({user: oid}),
-        followees: AccountFollowing.count({follower: oid}),
-        followers: AccountFollowing.count({followee: oid})
-      })
+      counts: {
+        posts: account.postsCount,
+        likes: account.likesCount,
+        followees: account.followingCount,
+        followers: account.followersCount
+      }
     }
   }
 }
@@ -65,12 +64,12 @@ app.use(route.get('/account', async (ctx) => {
 app.use(route.get('/accounts/:id/status', async (ctx, id) => {
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
-  ctx.body = await getAccountStatusByOId(account.id)
+  ctx.body = getAccountStatusByAccountInstance(account)
 }))
 
 app.use(route.get('/account/status', async (ctx) => {
   await denyNonAuthorized(ctx)
-  ctx.body = await getAccountStatusByOId(ctx.state.account.id)
+  ctx.body = getAccountStatusByAccountInstance(ctx.state.account)
 }))
 
 app.use(route.get('/accounts/:id/posts', async (ctx, id) => {
@@ -90,11 +89,16 @@ app.use(route.get('/account/posts', async (ctx) => {
 
 app.use(route.delete('/account/posts/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
+
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
   if (!post.user.equals(ctx.state.account.id)) ctx.throw(403, `must not try to delete other account's post`)
-  await post.remove()
+
+  --ctx.state.account.postCount
+
+  await Promise.all(post.remove(), ctx.state.account.save())
+
   ctx.status = 204
 }))
 
@@ -103,28 +107,37 @@ app.use(route.all('/account/posts/(.*)', genSynonymRedirector('/posts')))
 
 app.use(route.put('/account/stars/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
+
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
-  const post = await Post.findById(id)
-  if (!post) ctx.throw(404, 'there are no posts has given ID.')
   const content = {
     post: post.id,
     user: ctx.state.account.id }
-  if (await PostLike.findOne(content)) ctx.throw(409, 'already starred.')
+  const [post, starState] = await Promise.all(Post.findById(id), PostLike.findOne(content))
+  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  if (starState) ctx.throw(409, 'already starred.')
+
   const star = new PostLike(content)
-  await star.save()
+  ++post.likesCount
+
+  await Promise.all(star.save(), post.save())
+
   ctx.status = 204
 }))
 
 app.use(route.delete('/account/stars/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
+
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
-  const post = await Post.findById(id)
-  if (!post) ctx.throw(404, 'there are no posts has given ID.')
-  const star = await PostLike.findOne({
+  const [post, star] = await Promise.all(Post.findById(id), PostLike.findOne({
     post: post.id,
-    user: ctx.state.account.id })
+    user: ctx.state.account.id }))
+  if (!post) ctx.throw(404, 'there are no posts has given ID.')
   if (!star) ctx.throw(404, 'there are no stars to the post has given ID.')
-  await star.remove()
+
+  --post.likesCount
+
+  await Promise.all(star.delete(), post.save())
+
   ctx.status = 204
 }))
 
