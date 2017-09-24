@@ -16,6 +16,8 @@ import Logger from '../tools/logger'
 import { Account, Post, File } from '../db'
 import redis from '../redis'
 
+import { resolveAllInObject } from './utils'
+
 const app = new Koa()
 const logger = new Logger(cluster.isWorker ? `app#${cluster.worker.id}` : 'app')
 
@@ -184,11 +186,11 @@ app.use(async (ctx, next) => {
 app.use(route.get('/', async (ctx) => {
   ctx.body = {
     hash,
-    counts: {
-      accounts: await Account.count(),
-      files: await File.count(),
-      posts: await Post.count()
-    }
+    counts: await resolveAllInObject({
+      accounts: Account.count(),
+      files: File.count(),
+      posts: Post.count()
+    })
   }
 }))
 

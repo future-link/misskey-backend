@@ -6,7 +6,7 @@ import config from '../../config'
 import { Account, AccountFollowing, Post, PostLike } from '../../db'
 import { transformAccount, transformPost } from '../../transformers'
 
-import { denyNonAuthorized, getLimitAndSkip } from '../utils'
+import { denyNonAuthorized, getLimitAndSkip, resolveAllInObject } from '../utils'
 
 const getAccountById = async id => {
   let account = null
@@ -25,12 +25,12 @@ const getAccountById = async id => {
 const getAccountStatusByOId = async oid => {
   return {
     status: {
-      counts: {
-        posts: await Post.count({user: oid}),
-        likes: await PostLike.count({user: oid}),
-        followees: await AccountFollowing.count({follower: oid}),
-        followers: await AccountFollowing.count({followee: oid})
-      }
+      counts: await resolveAllInObject({
+        posts: Post.count({user: oid}),
+        likes: PostLike.count({user: oid}),
+        followees: AccountFollowing.count({follower: oid}),
+        followers: AccountFollowing.count({followee: oid})
+      })
     }
   }
 }

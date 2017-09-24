@@ -40,3 +40,13 @@ export class ContextErrorMimic extends Error {
     this.status = status
   }
 }
+
+export async function resolveAllInObject (obj) {
+  const target = Object.assign(obj, {})
+  const keys = Object.keys(obj)
+  const values = await Promise.all(Object.values(obj))
+  values.forEach((v, i) => {
+    target[keys[i]] = v
+  })
+  return target
+}
