@@ -27,6 +27,7 @@ export const getAccountStatusByAccountInstance = account => {
       counts: {
         posts: account.postsCount,
         likes: account.likesCount,
+        liked: account.likedCount,
         followees: account.followingCount,
         followers: account.followersCount
       }
@@ -112,14 +113,15 @@ app.use(route.put('/account/stars/:id', async (ctx, id) => {
   const content = {
     post: id,
     user: ctx.state.account.id }
-  const [post, starState] = await Promise.all([Status.findById(id), PostLike.findOne(content)])
+  const [post, starState] = await Promise.all([Status.findById(id).populate('user'), PostLike.findOne(content)])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
   if (starState) ctx.throw(409, 'already starred.')
 
   const star = new PostLike(content)
   ++post.likesCount
+  ++post.user.likedCount
 
-  await Promise.all([star.save(), post.save()])
+  await Promise.all([star.save(), post.save(), post.user.save()])
 
   ctx.status = 204
 }))
@@ -128,15 +130,16 @@ app.use(route.delete('/account/stars/:id', async (ctx, id) => {
   await denyNonAuthorized(ctx)
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
-  const [post, star] = await Promise.all([Status.findById(id), PostLike.findOne({
+  const [post, star] = await Promise.all([Status.findById(id).populate('user'), PostLike.findOne({
     post: id,
     user: ctx.state.account.id })])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
   if (!star) ctx.throw(404, 'there are no stars to the post has given ID.')
 
   --post.likesCount
+  --post.user.likedCount
 
-  await Promise.all([star.remove(), post.save()])
+  await Promise.all([star.remove(), post.save(), post.user.save()])
 
   ctx.status = 204
 }))
