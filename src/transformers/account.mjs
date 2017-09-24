@@ -1,39 +1,39 @@
 import common from './common'
 
-import { Post } from '../db'
+import { Account } from '../db'
 
 export default async raw => {
-  const post = common(raw, Post)
+  const target = common(raw, Account)
   // 利用されていない・不要な情報
-  delete post.birthday
-  delete post.color
-  delete post.credit
-  delete post.pinnedPost
-  delete post.avatarPath
-  delete post.bannerPath
-  delete post.wallpaperPath
-  delete post.isDeleted
-  delete post.isPrivate
-  delete post.isPro
-  delete post.isStaff
-  delete post.isSuspended
-  delete post.isVerified
-  delete post.isEmailVerified
-  delete post.wallpaper
-  delete post.latestPost
+  delete target.birthday
+  delete target.color
+  delete target.credit
+  delete target.pinnedPost
+  delete target.avatarPath
+  delete target.bannerPath
+  delete target.wallpaperPath
+  delete target.isDeleted
+  delete target.isPrivate
+  delete target.isPro
+  delete target.isStaff
+  delete target.isSuspended
+  delete target.isVerified
+  delete target.isEmailVerified
+  delete target.wallpaper
+  delete target.latestPost
   // 他のフィールドと使用用途が被っていて、なおかつ使用されていない情報
-  delete post.description
+  delete target.description
   // パブリックに開示する必要のない情報
-  delete post.timelineReadCursor
-  delete post.screenNameLower
+  delete target.timelineReadCursor
+  delete target.screenNameLower
   // 機密にすべき情報
-  delete post.email
-  delete post.encryptedPassword
+  delete target.email
+  delete target.encryptedPassword
   // その場で計上するため必要のない情報
-  delete post.postsCount
-  delete post.likesCount
-  delete post.likedCount
-  delete post.followingCount
-  delete post.followersCount
-  return post
+  delete target.target.Count
+  delete target.likesCount
+  delete target.likedCount
+  delete target.followingCount
+  delete target.followersCount
+  return target
 }
