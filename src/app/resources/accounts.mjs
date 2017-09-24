@@ -21,11 +21,11 @@ const getAccountById = async id => {
   return account
 }
 
-export const getAccountStatusByAccountInstance = account => {
+export const getAccountStatusByAccountInstance = async account => {
   return {
     status: {
       counts: {
-        posts: account.postsCount,
+        posts: await Post.count({user: account.id}).ne('type', 'repost'),
         likes: account.likesCount,
         liked: account.likedCount,
         followees: account.followingCount,
@@ -65,26 +65,26 @@ app.use(route.get('/account', async (ctx) => {
 app.use(route.get('/accounts/:id/status', async (ctx, id) => {
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
-  ctx.body = getAccountStatusByAccountInstance(account)
+  ctx.body = await getAccountStatusByAccountInstance(account)
 }))
 
 app.use(route.get('/account/status', async (ctx) => {
   await denyNonAuthorized(ctx)
-  ctx.body = getAccountStatusByAccountInstance(ctx.state.account)
+  ctx.body = await getAccountStatusByAccountInstance(ctx.state.account)
 }))
 
 app.use(route.get('/accounts/:id/posts', async (ctx, id) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
-  const posts = await Post.find({user: account.id}).skip(skip).limit(limit)
+  const posts = await Post.find({user: account.id}).ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 }))
 
 app.use(route.get('/account/posts', async (ctx) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   await denyNonAuthorized(ctx)
-  const posts = await Post.find({user: ctx.state.account.id}).skip(skip).limit(limit)
+  const posts = await Post.find({user: ctx.state.account.id}).ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 }))
 
@@ -94,6 +94,7 @@ app.use(route.delete('/account/posts/:id', async (ctx, id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
   if (!post.user.equals(ctx.state.account.id)) ctx.throw(403, `must not try to delete other account's post`)
 
   --ctx.state.account.postCount
@@ -115,6 +116,7 @@ app.use(route.put('/account/stars/:id', async (ctx, id) => {
     user: ctx.state.account.id }
   const [post, starState] = await Promise.all([Status.findById(id).populate('user'), PostLike.findOne(content)])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
   if (starState) ctx.throw(409, 'already starred.')
 
   const star = new PostLike(content)
@@ -134,6 +136,7 @@ app.use(route.delete('/account/stars/:id', async (ctx, id) => {
     post: id,
     user: ctx.state.account.id })])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
   if (!star) ctx.throw(404, 'there are no stars to the post has given ID.')
 
   --post.likesCount

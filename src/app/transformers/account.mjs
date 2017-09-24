@@ -38,6 +38,6 @@ export default async raw => {
   delete target.followingCount
   delete target.followersCount
   // /status の内容は統合される
-  Object.assign(target, getAccountStatusByAccountInstance(raw))
+  Object.assign(target, await getAccountStatusByAccountInstance(raw))
   return target
 }

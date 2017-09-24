@@ -189,7 +189,7 @@ app.use(route.get('/', async (ctx) => {
     counts: await resolveAllInObject({
       accounts: Account.count(),
       files: File.count(),
-      posts: Post.count()
+      posts: Post.count().ne('type', 'repost')
     })
   }
 }))
