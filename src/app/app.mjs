@@ -71,12 +71,9 @@ app.use(async (ctx, next) => {
   }
 
   const format = ps.pop()
-  // when unsupported extension type, stop middleware chaining
+  // when unsupported extension type, continue normal middleware chaining
   if (!formats.includes(format)) {
-    ctx.status = 400
-    ctx.body = {
-      message: 'unsupported extension type specified.'
-    }
+    await next()
     return
   }
 
