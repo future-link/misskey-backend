@@ -110,7 +110,7 @@ app.use(route.put('/account/stars/:id', async (ctx, id) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const content = {
-    post: post.id,
+    post: id,
     user: ctx.state.account.id }
   const [post, starState] = await Promise.all([Post.findById(id), PostLike.findOne(content)])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
@@ -129,7 +129,7 @@ app.use(route.delete('/account/stars/:id', async (ctx, id) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const [post, star] = await Promise.all([Post.findById(id), PostLike.findOne({
-    post: post.id,
+    post: id,
     user: ctx.state.account.id })])
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
   if (!star) ctx.throw(404, 'there are no stars to the post has given ID.')
