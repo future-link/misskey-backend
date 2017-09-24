@@ -13,6 +13,8 @@ import yaml from 'js-yaml'
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'
 
+import config from '../config'
+
 import { Account, Post, File } from '../db'
 import redis from '../redis'
 
@@ -94,7 +96,7 @@ app.use(async (ctx, next) => {
     await next()
   } catch (e) {
     // without ctx.throw, need logging
-    if (!e.expose) logger.error(e.stack)
+    if (!e.expose || config.flags.verbose) logger.error(e.stack)
     ctx.status = e.expose ? e.status : 500
     ctx.body = {
       message: e.expose ? e.message : 'an unexpected error has occurred, please contact to operators.'
