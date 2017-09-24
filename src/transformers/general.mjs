@@ -1,5 +1,5 @@
-export default (doc, ret) => {
-  ret.id = ret._id
-  delete ret._id
-  delete ret.__v
+import common from './common'
+
+export default async raw => {
+    return common(raw)
 }
