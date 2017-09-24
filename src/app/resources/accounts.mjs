@@ -25,7 +25,7 @@ export const getAccountStatusByAccountInstance = async account => {
   return {
     status: {
       counts: {
-        posts: await Post.count({user: account.id}).ne('type', 'repost'),
+        posts: account.postsCount,
         likes: account.likesCount,
         liked: account.likedCount,
         followees: account.followingCount,
