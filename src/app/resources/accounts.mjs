@@ -26,8 +26,7 @@ export const getAccountStatusByAccountInstance = async account => {
     status: {
       counts: {
         posts: account.postsCount,
-        likes: account.likesCount,
-        liked: account.likedCount,
+        stars: account.likesCount,
         followees: account.followingCount,
         followers: account.followersCount
       }
