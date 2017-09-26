@@ -5,8 +5,7 @@ import app from '../app'
 import { Post, PostLike } from '../../db'
 
 import { transformPost, transformAccount } from '../transformers'
-import { getLimitAndSkip, denyNonAuthorized } from '../utils'
-import redis from '../../redis'
+import { getLimitAndSkip } from '../utils'
 
 app.use(route.get('/posts', async (ctx) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
