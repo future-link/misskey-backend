@@ -35,13 +35,13 @@ export const getAccountStatusByAccountInstance = async account => {
 }
 
 const genSynonymRedirector = (prefix) => {
-  return (function (...rest) {
+  return (...rest) => {
     const ctx = rest.shift()
     rest.pop() // next
     const path = rest.pop()
     ctx.status = 307
     ctx.set('location', `${config.root}${prefix}/${path}`)
-  }).bind({prefix})
+  }
 }
 
 app.use(route.get('/accounts', async (ctx) => {
