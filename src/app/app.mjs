@@ -164,22 +164,11 @@ app.use(async (ctx, next) => {
   const scheme = as.shift().toLowerCase()
   const value = as.join(' ')
 
-  if (!schemes.includes(scheme)) {
-    ctx.status = 400
-    ctx.body = {
-      message: 'unsupported authorization scheme specified.'
-    }
-    return
-  }
+  if (!schemes.includes(scheme)) ctx.throw(400, 'unsupported authorization scheme specified.')
 
   const account = await authenticater[scheme](value)
-  if (!account) {
-    ctx.status = 400
-    ctx.body = {
-      message: 'incorrect authentication information specified.'
-    }
-    return
-  }
+  if (!account) ctx.throw(400, 'incorrect authentication information specified.')
+
   ctx.state.account = account
   await next()
 })
