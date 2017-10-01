@@ -5,7 +5,7 @@ import config from './config'
 
 import Logger from './tools/logger'
 
-import app from './app'
+import server from './server'
 
 const logger = new Logger(cluster.isMaster ? 'master' : 'worker')
 
@@ -41,7 +41,7 @@ if (cluster.isMaster && config.flags.clustering) {
     cluster.fork()
   }
 } else {
-  app.listen(config.port)
+  server.listen(config.port)
   // notice worker number in worker
   if (cluster.isWorker) logger.log(`worker number ${cluster.worker.id} is ready.`)
 }

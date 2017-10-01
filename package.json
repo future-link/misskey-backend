@@ -27,8 +27,10 @@
     "mongoose": "^4.11.9",
     "mongoose-auto-increment": "^5.0.1",
     "msgpack-lite": "^0.1.26",
+    "path-to-regexp": "^2.0.0",
     "redis": "^2.8.0",
-    "redis-js": "^0.1.2"
+    "redis-js": "^0.1.2",
+    "ws": "^3.2.0"
   },
   "devDependencies": {
     "standard": "^10.0.3"
