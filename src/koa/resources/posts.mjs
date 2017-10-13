@@ -4,12 +4,12 @@ import mongoose from 'mongoose'
 import { Post, PostLike } from '../../db/mongodb'
 
 import { transformPost, transformAccount } from '../../transformers'
-import { getLimitAndSkip } from '../utils'
+import { validateAndCastLimitAndSkip } from '../middlewares'
 
 const router = new Router()
 
-router.get('/', async (ctx) => {
-  const [limit, skip] = await getLimitAndSkip(ctx)
+router.get('/', validateAndCastLimitAndSkip(), async ctx => {
+  const { limit, skip } = ctx.state.query
   const posts = await Post.find().ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 })
@@ -23,9 +23,9 @@ router.get('/:id', async ctx => {
   ctx.body = { post: await transformPost(post) }
 })
 
-router.get('/:id/stargazers', async ctx => {
+router.get('/:id/stargazers', validateAndCastLimitAndSkip(), async ctx => {
+  const { limit, skip } = ctx.state.query
   const { id } = ctx.params
-  const [limit, skip] = await getLimitAndSkip(ctx)
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const likes = await PostLike.find({
     post: id

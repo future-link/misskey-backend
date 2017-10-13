@@ -5,8 +5,7 @@ import config from '../../config'
 import { Account, AccountFollowing, Post, PostLike, Status } from '../../db/mongodb'
 
 import { transformAccount, transformPost } from '../../transformers'
-import { getLimitAndSkip } from '../utils'
-import { denyNonAuthorized } from '../middlewares'
+import { denyNonAuthorized, validateAndCastLimitAndSkip } from '../middlewares'
 
 const accountsRouter = new Router()
 const accountRouter = new Router()
@@ -37,8 +36,8 @@ const getAccountStatusByAccountInstance = async account => {
   }
 }
 
-accountsRouter.get('/', async ctx => {
-  const [limit, skip] = await getLimitAndSkip(ctx)
+accountsRouter.get('/', validateAndCastLimitAndSkip(), async ctx => {
+  const { limit, skip } = ctx.state.query
   const accounts = await Account.find().skip(skip).limit(limit)
   ctx.body = { accounts: await Promise.all(accounts.map(v => transformAccount(v))) }
 })
@@ -65,17 +64,17 @@ accountRouter.get('/status', denyNonAuthorized, async ctx => {
   ctx.body = await getAccountStatusByAccountInstance(ctx.state.account)
 })
 
-accountsRouter.get('/:id/posts', async ctx => {
+accountsRouter.get('/:id/posts', validateAndCastLimitAndSkip(), async ctx => {
   const { id } = ctx.params
-  const [limit, skip] = await getLimitAndSkip(ctx)
+  const { limit, skip } = ctx.state.query
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
   const posts = await Post.find({user: account.id}).ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 })
 
-accountRouter.get('/posts', denyNonAuthorized, async ctx => {
-  const [limit, skip] = await getLimitAndSkip(ctx)
+accountRouter.get('/posts', denyNonAuthorized, validateAndCastLimitAndSkip(), async ctx => {
+  const { limit, skip } = ctx.state.query
   const posts = await Post.find({user: ctx.state.account.id}).ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 })
