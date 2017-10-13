@@ -13,7 +13,7 @@ export async function getPropWithDefaultAndVerify (
 }
 
 export async function resolveAllInObject (obj) {
-  const target = Object.assign(obj, {})
+  const target = {}
   const keys = Object.keys(obj)
   const values = await Promise.all(Object.values(obj))
   values.forEach((v, i) => {
