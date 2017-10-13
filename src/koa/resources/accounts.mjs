@@ -5,7 +5,7 @@ import app from '../app'
 import config from '../../config'
 import { Account, AccountFollowing, Post, PostLike, Status } from '../../db'
 
-import { transformAccount, transformPost } from '../transformers'
+import { transformAccount, transformPost } from '../../transformers'
 import { denyNonAuthorized, getLimitAndSkip } from '../utils'
 
 const getAccountById = async id => {

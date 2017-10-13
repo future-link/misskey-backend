@@ -1,10 +1,10 @@
 import http from 'http'
 
-import koaApp from './koa-app'
-import wsApp from './ws-app'
+import koa from './koa'
+import ws from './ws'
 
 const server = http.createServer()
-server.on('request', koaApp.callback())
-wsApp({ server })
+server.on('request', koa.callback())
+ws({ server })
 
 export default server

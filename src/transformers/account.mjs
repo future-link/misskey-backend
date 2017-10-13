@@ -2,8 +2,6 @@ import common from './common'
 
 import { Account } from '../../db'
 
-import { getAccountStatusByAccountInstance } from '../resources/accounts'
-
 export default async raw => {
   const target = common(raw, Account)
   // 利用されていない・不要な情報
@@ -37,7 +35,5 @@ export default async raw => {
   delete target.likedCount
   delete target.followingCount
   delete target.followersCount
-  // /status の内容は統合される
-  Object.assign(target, await getAccountStatusByAccountInstance(raw))
   return target
 }

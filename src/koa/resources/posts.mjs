@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import app from '../app'
 import { Post, PostLike } from '../../db'
 
-import { transformPost, transformAccount } from '../transformers'
+import { transformPost, transformAccount } from '../../transformers'
 import { getLimitAndSkip } from '../utils'
 
 app.use(route.get('/posts', async (ctx) => {
