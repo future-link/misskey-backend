@@ -37,17 +37,6 @@ const getAccountStatusByAccountInstance = async account => {
   }
 }
 
-const genSynonymRedirector = prefix => {
-  return (...rest) => {
-    const ctx = rest.shift()
-    rest.pop() // next
-    const path = rest.pop()
-    const suffix = ctx.state.format ? `.${ctx.state.format}` : ''
-    ctx.status = 307
-    ctx.set('location', `${config.root}${prefix}/${path}${suffix}`)
-  }
-}
-
 accountsRouter.get('/', async ctx => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   const accounts = await Account.find().skip(skip).limit(limit)
@@ -148,6 +137,14 @@ accountRouter.delete('/stars/:id', denyNonAuthorized, async ctx => {
 })
 
 // set-up redirects
+const genSynonymRedirector = prefix => {
+  return ctx => {
+    const path = ctx.params['0']
+    const suffix = ctx.state.format ? `.${ctx.state.format}` : ''
+    ctx.status = 307
+    ctx.set('location', `${config.root}${prefix}/${path}${suffix}`)
+  }
+}
 accountsRouter.all('/:id/posts/(.*)', genSynonymRedirector('/posts'))
 accountRouter.all('/posts/(.*)', genSynonymRedirector('/posts'))
 accountsRouter.all('/:id/followees/(.*)', genSynonymRedirector('/accounts'))
