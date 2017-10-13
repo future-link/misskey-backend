@@ -1,27 +1,30 @@
-import route from 'koa-route'
+import Router from 'koa-router'
 import mongoose from 'mongoose'
 
-import app from '../app'
-import { Post, PostLike } from '../../db'
+import { Post, PostLike } from '../../db/mongodb'
 
 import { transformPost, transformAccount } from '../../transformers'
 import { getLimitAndSkip } from '../utils'
 
-app.use(route.get('/posts', async (ctx) => {
+const router = new Router()
+
+router.get('/', async (ctx) => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   const posts = await Post.find().ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
-}))
+})
 
-app.use(route.get('/posts/:id', async (ctx, id) => {
+router.get('/:id', async ctx => {
+  const { id } = ctx.params
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
   if (!post) ctx.throw(404, 'there are no posts has given ID.')
   if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
   ctx.body = { post: await transformPost(post) }
-}))
+})
 
-app.use(route.get('/posts/:id/stargazers', async (ctx, id) => {
+router.get('/:id/stargazers', async ctx => {
+  const { id } = ctx.params
   const [limit, skip] = await getLimitAndSkip(ctx)
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const likes = await PostLike.find({
@@ -33,4 +36,6 @@ app.use(route.get('/posts/:id/stargazers', async (ctx, id) => {
   const stargazers = []
   likes.forEach(like => { stargazers.push(like.user) })
   ctx.body = { stargazers: await Promise.all(stargazers.map(v => transformAccount(v))) }
-}))
+})
+
+export { router as posts }

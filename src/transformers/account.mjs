@@ -1,6 +1,6 @@
 import common from './common'
 
-import { Account } from '../../db'
+import { Account } from '../db/mongodb'
 
 export default async raw => {
   const target = common(raw, Account)

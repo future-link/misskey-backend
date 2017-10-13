@@ -28,7 +28,7 @@ export default class {
 		this.eventHandlers[ev].push(f)
 	}
 
-    use (ev, ...rest) {
+	use (ev, ...rest) {
 		const [one, two = null] = rest
 		let handler, pm
 		if (two && typeof two === 'function') handler = two

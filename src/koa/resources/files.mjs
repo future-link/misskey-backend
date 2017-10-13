@@ -1,14 +1,18 @@
-import route from 'koa-route'
+import Router from 'koa-router'
 import mongoose from 'mongoose'
 
-import app from '../app'
-import { File } from '../../db'
+import { File } from '../../db/mongodb'
 
 import { transformFile } from '../../transformers'
 
-app.use(route.get('/files/:id', async (ctx, id) => {
+const router = new Router()
+
+router.get('/:id', async ctx => {
+  const { id } = ctx.params
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no files has given ID.')
   const file = await File.findById(id)
   if (!file) ctx.throw(404, 'there are no files has given ID.')
   ctx.body = { file: await transformFile(file) }
-}))
+})
+
+export { router as files }

@@ -1,12 +1,15 @@
-import route from 'koa-route'
+import Router from 'koa-router'
 import mongoose from 'mongoose'
 
-import app from '../app'
 import config from '../../config'
-import { Account, AccountFollowing, Post, PostLike, Status } from '../../db'
+import { Account, AccountFollowing, Post, PostLike, Status } from '../../db/mongodb'
 
 import { transformAccount, transformPost } from '../../transformers'
-import { denyNonAuthorized, getLimitAndSkip } from '../utils'
+import { getLimitAndSkip } from '../utils'
+import { denyNonAuthorized } from '../middlewares'
+
+const accountsRouter = new Router()
+const accountRouter = new Router()
 
 const getAccountById = async id => {
   let account = null
@@ -21,7 +24,7 @@ const getAccountById = async id => {
   return account
 }
 
-export const getAccountStatusByAccountInstance = async account => {
+const getAccountStatusByAccountInstance = async account => {
   return {
     status: {
       counts: {
@@ -34,61 +37,62 @@ export const getAccountStatusByAccountInstance = async account => {
   }
 }
 
-const genSynonymRedirector = (prefix) => {
+const genSynonymRedirector = prefix => {
   return (...rest) => {
     const ctx = rest.shift()
     rest.pop() // next
     const path = rest.pop()
+    const suffix = ctx.state.format ? `.${ctx.state.format}` : ''
     ctx.status = 307
-    ctx.set('location', `${config.root}${prefix}/${path}`)
+    ctx.set('location', `${config.root}${prefix}/${path}${suffix}`)
   }
 }
 
-app.use(route.get('/accounts', async (ctx) => {
+accountsRouter.get('/', async ctx => {
   const [limit, skip] = await getLimitAndSkip(ctx)
   const accounts = await Account.find().skip(skip).limit(limit)
   ctx.body = { accounts: await Promise.all(accounts.map(v => transformAccount(v))) }
-}))
+})
 
-app.use(route.get('/accounts/:id', async (ctx, id) => {
+accountsRouter.get('/:id', async ctx => {
+  const { id } = ctx.params
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
   ctx.body = { account: await transformAccount(account) }
-}))
+})
 
-app.use(route.get('/account', async (ctx) => {
-  await denyNonAuthorized(ctx)
+accountRouter.get('/', denyNonAuthorized, async ctx => {
   ctx.body = { account: await transformAccount(ctx.state.account) }
-}))
+})
 
-app.use(route.get('/accounts/:id/status', async (ctx, id) => {
+accountsRouter.get('/:id/status', async ctx => {
+  const { id } = ctx.params
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
   ctx.body = await getAccountStatusByAccountInstance(account)
-}))
+})
 
-app.use(route.get('/account/status', async (ctx) => {
-  await denyNonAuthorized(ctx)
+accountRouter.get('/status', denyNonAuthorized, async ctx => {
   ctx.body = await getAccountStatusByAccountInstance(ctx.state.account)
-}))
+})
 
-app.use(route.get('/accounts/:id/posts', async (ctx, id) => {
+accountsRouter.get('/:id/posts', async ctx => {
+  const { id } = ctx.params
   const [limit, skip] = await getLimitAndSkip(ctx)
   const account = await getAccountById(id)
   if (!account) ctx.throw(404, 'there are no accounts has given ID.')
   const posts = await Post.find({user: account.id}).ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
-}))
+})
 
-app.use(route.get('/account/posts', async (ctx) => {
+accountRouter.get('/posts', denyNonAuthorized, async ctx => {
   const [limit, skip] = await getLimitAndSkip(ctx)
-  await denyNonAuthorized(ctx)
   const posts = await Post.find({user: ctx.state.account.id}).ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
-}))
+})
 
-app.use(route.delete('/account/posts/:id', async (ctx, id) => {
-  await denyNonAuthorized(ctx)
+accountRouter.delete('/posts/:id', denyNonAuthorized, async ctx => {
+  const { id } = ctx.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
@@ -101,13 +105,10 @@ app.use(route.delete('/account/posts/:id', async (ctx, id) => {
   await Promise.all([post.remove(), ctx.state.account.save()])
 
   ctx.status = 204
-}))
+})
 
-app.use(route.all('/accounts/:id/posts/(.*)', genSynonymRedirector('/posts')))
-app.use(route.all('/account/posts/(.*)', genSynonymRedirector('/posts')))
-
-app.use(route.put('/account/stars/:id', async (ctx, id) => {
-  await denyNonAuthorized(ctx)
+accountRouter.put('/stars/:id', denyNonAuthorized, async ctx => {
+  const { id } = ctx.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const content = {
@@ -125,10 +126,10 @@ app.use(route.put('/account/stars/:id', async (ctx, id) => {
   await Promise.all([star.save(), post.save(), post.user.save()])
 
   ctx.status = 204
-}))
+})
 
-app.use(route.delete('/account/stars/:id', async (ctx, id) => {
-  await denyNonAuthorized(ctx)
+accountRouter.delete('/stars/:id', denyNonAuthorized, async ctx => {
+  const { id } = ctx.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const [post, star] = await Promise.all([Status.findById(id).populate('user'), PostLike.findOne({
@@ -144,10 +145,17 @@ app.use(route.delete('/account/stars/:id', async (ctx, id) => {
   await Promise.all([star.remove(), post.save(), post.user.save()])
 
   ctx.status = 204
-}))
+})
 
-app.use(route.all('/accounts/:id/followees/(.*)', genSynonymRedirector('/accounts')))
-app.use(route.all('/account/followees/(.*)', genSynonymRedirector('/accounts')))
+// set-up redirects
+accountsRouter.all('/:id/posts/(.*)', genSynonymRedirector('/posts'))
+accountRouter.all('/posts/(.*)', genSynonymRedirector('/posts'))
+accountsRouter.all('/:id/followees/(.*)', genSynonymRedirector('/accounts'))
+accountRouter.all('/followees/(.*)', genSynonymRedirector('/accounts'))
+accountsRouter.all('/:id/followers/(.*)', genSynonymRedirector('/accounts'))
+accountRouter.all('/followers/(.*)', genSynonymRedirector('/accounts'))
 
-app.use(route.all('/accounts/:id/followers/(.*)', genSynonymRedirector('/accounts')))
-app.use(route.all('/account/followers/(.*)', genSynonymRedirector('/accounts')))
+export {
+  accountsRouter as accounts,
+  accountRouter as account
+}
