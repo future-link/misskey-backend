@@ -1,4 +1,5 @@
 import pathToRegexp from 'path-to-regexp'
+import url from 'url'
 
 const isFunction = (target) => target.constructor !== undefined && ['Promise', 'Function', 'AsyncFunction'].includes(target.constructor.name)
 const generateObjectFromKVPairArrays = (ka, va) => {
@@ -13,7 +14,8 @@ const contextGenerator = (prototype, socket, request) => Object.assign(
   {
     socket,
     request,
-    state: {}
+    state: {},
+    path: url.parse(request.url).pathname
   },
   prototype
 )
@@ -48,7 +50,7 @@ export default class {
         return givenNext(...rest)
       }
 
-      const match = pathMatcher.exec(ctx.request.url)
+      const match = pathMatcher.exec(ctx.path)
       if (match) {
         ctx.params = generateObjectFromKVPairArrays(pathMatchKeys, match.slice(1))
         return handler(ctx, next)
