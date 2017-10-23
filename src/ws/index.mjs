@@ -1,26 +1,31 @@
 import ws from 'ws'
+import cluster from 'cluster'
 
-import Route from './route'
+import Router from './router'
 
-process.on('warning', (warning) => {
-  console.warn(warning.message);
-  // Warning: Possible EventEmitter memory leak detected. 2 test listeners added. Use emitter.setMaxListeners() to increase limit
-});
+import Logger from '../tools/logger'
+
+const logger = new Logger(cluster.isWorker ? `app#${cluster.worker.id}` : 'app')
 
 export default (...rest) => {
   const server = new ws.Server(...rest)
-  const route = new Route(server)
-  route.use('connection', async (...rest) => {
-    const next = rest.pop()
+
+  const router = new Router()
+  router.use(async (ctx, next) => {
+    logger.log(`Upgrade Websocket ${ctx.request.url}, ${ctx.request.socket.localAddress}, ${ctx.request.headers['user-agent']}`)
+    ctx.state.send = (obj) => { ctx.socket.send(JSON.stringify(obj)) }
     await next()
-    const ws = rest.shift()
-    ws.send('bye!')
-    ws.close()
+    ctx.socket.close()
   })
-  route.use('connection', '/:nanka', async (ws, incomming, nanka, next) => {
-    ws.send('!!!' + nanka)
-    await next()
+  router.use('/', async (ctx, next) => {
+    ctx.state.send({
+      message: 'welcome to ws world'
+    })
   })
-  route.use('connection', (ws) => ws.send('hi2!'))
+
+  // register router to server
+  const callback = router.callback()
+  server.on('connection', callback)
+
   return server
 }
