@@ -141,7 +141,7 @@ const genSynonymRedirector = prefix => {
     const path = ctx.params['0']
     const suffix = ctx.state.format ? `.${ctx.state.format}` : ''
     ctx.status = 307
-    ctx.set('location', `${config.root}${prefix}/${path}${suffix}`)
+    ctx.set('location', `${prefix}/${path}${suffix}`)
   }
 }
 accountsRouter.all('/:id/posts/(.*)', genSynonymRedirector('/posts'))
