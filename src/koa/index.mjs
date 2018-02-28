@@ -15,7 +15,7 @@ import Logger from '../tools/logger'
 
 import config from '../config'
 
-import * as resources from './resources'
+import * as routes from './routes'
 
 import { Account, Post, File } from '../db/mongodb'
 import { syncConnect as redisSyncConnect } from '../db/redis'
@@ -190,8 +190,8 @@ router.get('/', async (ctx) => {
     })
   }
 })
-// add entry for resources
-Object.entries(resources).forEach(([prefix, resource])=> router.use(`/${prefix}`, resource.routes()))
+// add entry for routes
+Object.entries(routes).forEach(([prefix, routes])=> router.use(`/${prefix}`, routes.routes()))
 
 app.use(router.routes())
 
