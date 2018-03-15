@@ -37,4 +37,4 @@ export const schema = new Schema({
     default: false }
 })
 
-export default db => db.model('Application', schema, 'Applications')
+export default (db: mongoose.Connection) => db.model('Application', schema, 'Applications')

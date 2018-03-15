@@ -20,7 +20,7 @@ export const schema = new Schema({
     ref: 'User' }
 })
 
-export default db => {
+export default (db: mongoose.Connection) => {
   schema.plugin(mongooseAutoIncrement.plugin, {
     model: 'PostLike',
     field: 'cursor'

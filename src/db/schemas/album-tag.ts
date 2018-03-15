@@ -15,4 +15,4 @@ export const schema = new Schema({
     ref: 'User' }
 })
 
-export default db => db.model('AlbumTag', schema, 'AlbumTags')
+export default (db: mongoose.Connection) => db.model('AlbumTag', schema, 'AlbumTags')

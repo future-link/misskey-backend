@@ -24,4 +24,4 @@ export const schema = new Schema({
     ref: 'User' }
 })
 
-export default db => db.model('PostMention', schema, 'PostMentions')
+export default (db: mongoose.Connection) => db.model('PostMention', schema, 'PostMentions')

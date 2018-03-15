@@ -43,7 +43,7 @@ export const talkGroupHistorySchema = new Schema(Object.assign({
     default: 'group' }
 }, generalSchemaObject))
 
-const talkHistory = db => db.model('TalkHistory', talkUserHistorySchema, 'TalkHistories')
-const talkUserHistory = db => db.model('TalkUserHistory', talkUserHistorySchema, 'TalkHistories')
-const talkGroupHistory = db => db.model('TalkGroupHistory', talkGroupHistorySchema, 'TalkHistories')
+const talkHistory = (db: mongoose.Connection) => db.model('TalkHistory', talkUserHistorySchema, 'TalkHistories')
+const talkUserHistory = (db: mongoose.Connection) => db.model('TalkUserHistory', talkUserHistorySchema, 'TalkHistories')
+const talkGroupHistory = (db: mongoose.Connection) => db.model('TalkGroupHistory', talkGroupHistorySchema, 'TalkHistories')
 export { talkHistory, talkUserHistory, talkGroupHistory }

@@ -33,4 +33,4 @@ export const schema = new Schema({
     ref: 'User' }
 })
 
-export default db => db.model('TalkGroup', schema, 'TalkGroups')
+export default (db: mongoose.Connection) => db.model('TalkGroup', schema, 'TalkGroups')

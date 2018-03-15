@@ -151,4 +151,4 @@ export const schema = new Schema({
     default: null }
 })
 
-export default db => db.model('User', schema, 'Users')
+export default (db: mongoose.Connection) => db.model('User', schema, 'Users')
