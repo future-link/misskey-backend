@@ -128,11 +128,11 @@ export const RepostSchema = new Schema(Object.assign({
 }, generalSchemaObject))
 
 export type IPost = IPostGeneric
-export interface IPostStatus extends IPost {
+export interface IPostStatus extends IPostNonRepost {
   type: "status"
 }
 
-export interface IPostReply extends IPost {
+export interface IPostReply extends IPostNonRepost {
   inReplyToPost: IPost | mongoose.Types.ObjectId
   type: "reply"
 }
