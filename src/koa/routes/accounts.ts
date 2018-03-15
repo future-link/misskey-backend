@@ -48,7 +48,7 @@ accountsRouter.get('/', validateAndCastLimitAndSkip(), async ctx => {
 accountsRouter.get('/:id', async ctx => {
   const { id } = ctx.params
   const account = await getAccountById(id)
-  if (!account) ctx.throw(404, 'there are no accounts has given ID.')
+  if (!account) return ctx.throw(404, 'there are no accounts has given ID.')
   ctx.body = { account: await transformAccount(account) }
 })
 
