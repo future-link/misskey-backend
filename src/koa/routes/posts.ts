@@ -5,6 +5,7 @@ import { Post, PostLike } from '../../db/mongodb'
 
 import { transformPost, transformAccount } from '../../transformers'
 import { validateAndCastLimitAndSkip } from '../middlewares'
+import { IUser } from '../../db/schemas/user';
 
 const router = new Router()
 
@@ -18,7 +19,7 @@ router.get('/:id', async ctx => {
   const { id } = ctx.params
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
-  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  if (!post) return ctx.throw(404, 'there are no posts has given ID.')
   if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
   ctx.body = { post: await transformPost(post) }
 })
@@ -33,8 +34,8 @@ router.get('/:id/stargazers', validateAndCastLimitAndSkip(), async ctx => {
     user: 1
   }).populate('user')
   if (!likes) ctx.throw(404, 'there are no stargazers to the post has given ID.')
-  const stargazers = []
-  likes.forEach(like => { stargazers.push(like.user) })
+  const stargazers: IUser[] = []
+  likes.forEach(like => { stargazers.push(like.user as IUser) })
   ctx.body = { stargazers: await Promise.all(stargazers.map(v => transformAccount(v))) }
 })
 

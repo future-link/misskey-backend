@@ -68,7 +68,10 @@ const formatters = {
     mime: 'text/vnd.yaml',
     processor: yaml.safeDump
   }
-}
+} as {[key: string]: {
+  mime: string
+  processor: (input: any) => string | Buffer
+}}
 app.use(async (ctx, next) => {
   ctx.state.format = ''
 
@@ -80,7 +83,7 @@ app.use(async (ctx, next) => {
     return
   }
 
-  const format = ps.pop()
+  const format = ps.pop()!
   // when unsupported extension type, continue normal middleware chaining
   if (!formats.includes(format)) {
     await next()
@@ -119,7 +122,9 @@ app.use(async (ctx, next) => {
 
 // account authenticate
 const schemes = ['bearer', 'basic']
-const authenticater = {
+const authenticater: {
+  [key: string]: (token: string) => Promise<mongoose.Document | null>
+} = {
   // will be with misskey-auth
   bearer: async token => null,
   // basic for the time being, will be removed
@@ -144,7 +149,7 @@ const authenticater = {
       const srhsa = srhs.split('+')
       const salt = srhsa.shift()
       const goal = srhsa.join('+')
-      if (crypto.createHash('sha512').update(`${salt}+${secret}`).toString('hex') === goal) return account
+      if (crypto.createHash('sha512').update(`${salt}+${secret}`).digest('hex') === goal) return account
     }
 
     // verify secret by bcrypt
@@ -152,7 +157,7 @@ const authenticater = {
 
     // cache 1hour with redis
     const crsalt = crypto.randomBytes(16).toString('hex')
-    const crhs = crypto.createHash('sha512').update(`${crsalt}+${secret}`).toString('hex')
+    const crhs = crypto.createHash('sha512').update(`${crsalt}+${secret}`).digest('hex')
     const exptime = 1 * 60 * 60
     redis.set(`mb:auth:basic:${account.id}`, `${crsalt}+${crhs}`, 'EX', exptime)
 
@@ -184,9 +189,9 @@ router.get('/', async (ctx) => {
   ctx.body = {
     hash,
     counts: await resolveAllInObject({
-      accounts: Account.count(),
-      files: File.count(),
-      posts: Post.count().ne('type', 'repost')
+      accounts: Account.count({}).exec(),
+      files: File.count({}).exec(),
+      posts: Post.count({}).ne('type', 'repost').exec(),
     })
   }
 })

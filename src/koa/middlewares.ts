@@ -1,6 +1,7 @@
+import * as koa from "koa"
 import { getPropWithDefaultAndVerify } from './utils'
 
-export const denyNonAuthorized = (ctx, next) => {
+export const denyNonAuthorized: koa.Middleware = (ctx, next) => {
   if (!ctx.state.account)
     ctx.throw(401, 'must authenticate to request this endpoint.')
   return next()
@@ -13,7 +14,7 @@ export const denyNonAuthorized = (ctx, next) => {
  * @type Configuration an Object has 'max' and 'default', both are integer
  * @returns Koa.middleware
  */
-export const validateAndCastLimitAndSkip = ({ max: limitMax = 200, default: limitDefault = 100 } = {}, skipDefault = 0) => {
+export const validateAndCastLimitAndSkip = ({ max: limitMax = 200, default: limitDefault = 100 } = {}, skipDefault = 0): koa.Middleware => {
   return async (ctx, next) => {
     if (!ctx.state.query) ctx.state.query = {}
     await Promise.all([

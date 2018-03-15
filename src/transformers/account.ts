@@ -1,8 +1,9 @@
 import common from './common'
 
 import { Account } from '../db/mongodb'
+import { IUser } from '../db/schemas/user';
 
-export default async raw => {
+export default async (raw: IUser) => {
   const target = common(raw, Account)
   // 利用されていない・不要な情報
   delete target.birthday

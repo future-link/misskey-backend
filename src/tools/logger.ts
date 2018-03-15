@@ -8,7 +8,7 @@ import config from '../config'
  * @param {string|object} indicator output this to console
  * @param {string} level console level
  */
-const showPadded = (indicator, level) => {
+const showPadded = (indicator: string | any, level: "error" | "warn" | "log") => {
   const fourSpace = '    '
   const clams = typeof indicator === 'object' ? util.inspect(indicator) : indicator
   const shell = clams.split(/\r?\n/)
@@ -16,8 +16,10 @@ const showPadded = (indicator, level) => {
 }
 
 export default class Logger {
-  constructor (name) {
-    this.verbose = config.flags.verbose
+  verbose = config.flags.verbose
+  name: string
+
+  constructor (name: string) {
     this.name = name
   }
 
@@ -25,7 +27,7 @@ export default class Logger {
    * output to console with time.
    * @param {string} str output this to console
    */
-  log (str) {
+  log (str: string) {
     console.log(`[${time()}] ${this.name} | ${str}`)
   }
 
@@ -34,7 +36,7 @@ export default class Logger {
    * with 4 space padding.
    * @param {string|object} indicator output this to console
    */
-  detail (indicator) {
+  detail (indicator: string | object) {
     if (!this.verbose) return
     showPadded(indicator, 'log')
   }
@@ -43,7 +45,7 @@ export default class Logger {
    * output error to console with 4 space padding.
    * @param {string|object} indicator output this to console
    */
-  error (indicator) {
+  error (indicator: string | object) {
     showPadded(indicator, 'error')
   }
 }

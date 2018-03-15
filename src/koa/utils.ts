@@ -1,5 +1,5 @@
-export async function getPropWithDefaultAndVerify (
-  object, key, preset, verifier = null, pne = null, thrower = (status, message) => {
+export async function getPropWithDefaultAndVerify<T> (
+  object: any, key: string, preset: T, verifier: ((input: any) => boolean) | null = null, pne: string | null = null, thrower = (status: number, message: string) => {
     throw new Error(message)
   }
 ) {
@@ -12,8 +12,9 @@ export async function getPropWithDefaultAndVerify (
   thrower(400, `${pne || key} is invalid.`)
 }
 
-export async function resolveAllInObject (obj) {
-  const target = {}
+// TODO: ここの型もっとうまくやる
+export async function resolveAllInObject (obj: {[key: string]: Promise<any>}) {
+  const target: {[key: string]: any} = {}
   const keys = Object.keys(obj)
   const values = await Promise.all(Object.values(obj))
   values.forEach((v, i) => {

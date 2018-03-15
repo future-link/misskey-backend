@@ -1,3 +1,4 @@
+import * as koa from 'koa'
 import * as Router from 'koa-router'
 import * as mongoose from 'mongoose'
 
@@ -6,11 +7,13 @@ import { Account, AccountFollowing, Post, PostLike, Status } from '../../db/mong
 
 import { transformAccount, transformPost } from '../../transformers'
 import { denyNonAuthorized, validateAndCastLimitAndSkip } from '../middlewares'
+import { IUser } from '../../db/schemas/user';
+import { IPostStatus } from '../../db/schemas/post';
 
 const accountsRouter = new Router()
 const accountRouter = new Router()
 
-const getAccountById = async id => {
+const getAccountById = async (id: string) => {
   let account = null
   if (id.startsWith('@')) {
     account = await Account.findOne({
@@ -23,7 +26,7 @@ const getAccountById = async id => {
   return account
 }
 
-const getAccountStatusByAccountInstance = async account => {
+const getAccountStatusByAccountInstance = async (account: IUser) => {
   return {
     status: {
       counts: {
@@ -56,7 +59,7 @@ accountRouter.get('/', denyNonAuthorized, async ctx => {
 accountsRouter.get('/:id/status', async ctx => {
   const { id } = ctx.params
   const account = await getAccountById(id)
-  if (!account) ctx.throw(404, 'there are no accounts has given ID.')
+  if (!account) return ctx.throw(404, 'there are no accounts has given ID.')
   ctx.body = await getAccountStatusByAccountInstance(account)
 })
 
@@ -68,7 +71,7 @@ accountsRouter.get('/:id/posts', validateAndCastLimitAndSkip(), async ctx => {
   const { id } = ctx.params
   const { limit, skip } = ctx.state.query
   const account = await getAccountById(id)
-  if (!account) ctx.throw(404, 'there are no accounts has given ID.')
+  if (!account) return ctx.throw(404, 'there are no accounts has given ID.')
   const posts = await Post.find({user: account.id}).ne('type', 'repost').skip(skip).limit(limit)
   ctx.body = { posts: await Promise.all(posts.map(v => transformPost(v))) }
 })
@@ -84,9 +87,9 @@ accountRouter.delete('/posts/:id', denyNonAuthorized, async ctx => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
   const post = await Post.findById(id)
-  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  if (!post) return ctx.throw(404, 'there are no posts has given ID.')
   if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
-  if (!post.user.equals(ctx.state.account.id)) ctx.throw(403, `must not try to delete other account's post`)
+  if (!(post.user as mongoose.Types.ObjectId).equals(ctx.state.account.id)) ctx.throw(403, `must not try to delete other account's post`)
 
   --ctx.state.account.postCount
 
@@ -102,16 +105,19 @@ accountRouter.put('/stars/:id', denyNonAuthorized, async ctx => {
   const content = {
     post: id,
     user: ctx.state.account.id }
-  const [post, starState] = await Promise.all([Status.findById(id).populate('user'), PostLike.findOne(content)])
-  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  const [post, starState] = await Promise.all([
+    Status.findById(id).populate('user').exec(),
+    PostLike.findOne(content).exec()
+  ])
+  if (!post) return ctx.throw(404, 'there are no posts has given ID.')
   if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
   if (starState) ctx.throw(409, 'already starred.')
 
   const star = new PostLike(content)
   ++post.likesCount
-  ++post.user.likedCount
+  ++(post.user as IUser).likedCount
 
-  await Promise.all([star.save(), post.save(), post.user.save()])
+  await Promise.all([star.save(), post.save(), (post.user as IUser).save()])
 
   ctx.status = 204
 })
@@ -120,23 +126,27 @@ accountRouter.delete('/stars/:id', denyNonAuthorized, async ctx => {
   const { id } = ctx.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) ctx.throw(404, 'there are no posts has given ID.')
-  const [post, star] = await Promise.all([Status.findById(id).populate('user'), PostLike.findOne({
-    post: id,
-    user: ctx.state.account.id })])
-  if (!post) ctx.throw(404, 'there are no posts has given ID.')
+  const [post, star] = await Promise.all([
+    Status.findById(id).populate('user').exec(),
+    PostLike.findOne({
+      post: id,
+      user: ctx.state.account.id
+    }).exec()
+  ])
+  if (!post) return ctx.throw(404, 'there are no posts has given ID.')
   if (['repost'].includes(post.type)) ctx.throw(404, 'there are no posts has given ID.')
-  if (!star) ctx.throw(404, 'there are no stars to the post has given ID.')
+  if (!star) return ctx.throw(404, 'there are no stars to the post has given ID.')
 
   --post.likesCount
-  --post.user.likedCount
+  --(post.user as IUser).likedCount
 
-  await Promise.all([star.remove(), post.save(), post.user.save()])
+  await Promise.all([star.remove(), post.save(), (post.user as IUser).save()])
 
   ctx.status = 204
 })
 
 // set-up redirects
-const genSynonymRedirector = prefix => {
+const genSynonymRedirector = (prefix: string): koa.Middleware => {
   return ctx => {
     const path = ctx.params['0']
     const suffix = ctx.state.format ? `.${ctx.state.format}` : ''

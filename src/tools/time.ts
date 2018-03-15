@@ -6,7 +6,7 @@
  * @param {showPlusSign} boolean show plus (+) to return string when mejor num specified
  * @return {string}
  */
-const zp = (num, length, showPlusSign = false) => {
+const zp = (num: number, length: number, showPlusSign: boolean = false) => {
   if (!Number.isInteger(length) || !Number.isInteger(num)) {
     throw new Error('argument must be integer.')
   }
