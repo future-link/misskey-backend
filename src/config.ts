@@ -1,6 +1,14 @@
 import * as dotenv from 'dotenv-safe'
 
-function validator (config) {
+function validator (config: {
+  mongodb?: string
+  redis: string | null
+  flags: {
+    clustering: boolean
+    verbose: boolean
+  }
+  port: number
+}) {
   const errors = []
   if (!config.mongodb) errors.push('[BACKEND_MONGODB_URI] must set MongoDB URI.')
   if (!config.port) errors.push('[BACKEND_PORT] must set application standby port.')
