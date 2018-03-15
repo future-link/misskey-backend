@@ -19,4 +19,5 @@ export const syncConnect = () => {
     console.error(e.stack)
     process.exit(1)
   })
+  return client
 }
