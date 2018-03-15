@@ -1,4 +1,6 @@
 import * as mongoose from 'mongoose'
+import { IUser } from './user';
+import { ITalkGroup } from './talk-group';
 
 const Schema = mongoose.Schema
 
@@ -43,7 +45,25 @@ export const talkGroupHistorySchema = new Schema(Object.assign({
     default: 'group' }
 }, generalSchemaObject))
 
-const talkHistory = (db: mongoose.Connection) => db.model('TalkHistory', talkUserHistorySchema, 'TalkHistories')
-const talkUserHistory = (db: mongoose.Connection) => db.model('TalkUserHistory', talkUserHistorySchema, 'TalkHistories')
-const talkGroupHistory = (db: mongoose.Connection) => db.model('TalkGroupHistory', talkGroupHistorySchema, 'TalkHistories')
+export interface ITalkHistory extends mongoose.Document {
+  updatedAt: Date
+  // TODO: TalkMessageのschemaを追加
+  // message: ITalkMessage | mongoose.Types.ObjectId
+  user: IUser | mongoose.Types.ObjectId
+  type: string
+}
+
+export interface ITalkUserHistory extends mongoose.Document {
+  recipient: IUser | mongoose.Types.ObjectId
+  type: "user"
+}
+
+export interface ITalkGroupHistory extends mongoose.Document {
+  group: ITalkGroup | mongoose.Types.ObjectId
+  type: "group"
+}
+
+const talkHistory = (db: mongoose.Connection) => db.model<ITalkHistory>('TalkHistory', talkUserHistorySchema, 'TalkHistories')
+const talkUserHistory = (db: mongoose.Connection) => db.model<ITalkUserHistory>('TalkUserHistory', talkUserHistorySchema, 'TalkHistories')
+const talkGroupHistory = (db: mongoose.Connection) => db.model<ITalkGroupHistory>('TalkGroupHistory', talkGroupHistorySchema, 'TalkHistories')
 export { talkHistory, talkUserHistory, talkGroupHistory }

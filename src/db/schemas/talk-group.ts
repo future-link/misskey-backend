@@ -1,4 +1,6 @@
 import * as mongoose from 'mongoose'
+import { IAlbumFile } from './album-file';
+import { IUser } from './user';
 
 const Schema = mongoose.Schema
 
@@ -33,4 +35,14 @@ export const schema = new Schema({
     ref: 'User' }
 })
 
-export default (db: mongoose.Connection) => db.model('TalkGroup', schema, 'TalkGroups')
+export interface ITalkGroup extends mongoose.Document{
+  allowInvite: boolean
+  createdAt: Date
+  icon?: IAlbumFile | mongoose.Types.ObjectId
+  iconPath: string
+  members: (IUser | mongoose.Types.ObjectId)[]
+  name: string
+  owner: IUser | mongoose.Types.ObjectId
+}
+
+export default (db: mongoose.Connection) => db.model<ITalkGroup>('TalkGroup', schema, 'TalkGroups')

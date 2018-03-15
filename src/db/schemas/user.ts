@@ -1,4 +1,6 @@
 import * as mongoose from 'mongoose'
+import { IAlbumFile } from './album-file';
+import { IPost } from './post';
 
 const Schema = mongoose.Schema
 
@@ -151,4 +153,42 @@ export const schema = new Schema({
     default: null }
 })
 
-export default (db: mongoose.Connection) => db.model('User', schema, 'Users')
+export interface IUser extends mongoose.Document {
+  avatar?: IAlbumFile | mongoose.Types.ObjectId
+  avatarPath?: string
+  banner?: IAlbumFile | mongoose.Types.ObjectId
+  bannerPath?: string
+  birthday?: Date
+  color?: string
+  createdAt: Date
+  credit: number
+  description?: string
+  email?: string
+  encryptedPassword: string
+  followersCount: number
+  followingCount: number
+  isDeleted: boolean | any
+  isEmailVerified: boolean
+  isPrivate: boolean
+  isPro: boolean
+  isStaff: boolean
+  isSuspended: boolean
+  isVerified: boolean
+  lang: string
+  latestPost?: IPost | mongoose.Types.ObjectId
+  likedCount: number
+  likesCount: number
+  location?: string
+  name: string
+  pinnedPost?: IPost | mongoose.Types.ObjectId
+  postsCount: number
+  screenName: string
+  screenNameLower: string
+  tags: string[]
+  timelineReadCursor: number
+  url?: string
+  wallpaper: IAlbumFile | mongoose.Types.ObjectId
+  wallpaperPath?: string
+}
+
+export default (db: mongoose.Connection) => db.model<IUser>('User', schema, 'Users')

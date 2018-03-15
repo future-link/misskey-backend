@@ -37,4 +37,16 @@ export const schema = new Schema({
     default: false }
 })
 
-export default (db: mongoose.Connection) => db.model('Application', schema, 'Applications')
+export interface IApplication extends mongoose.Document{
+  createdAt: Date
+  userId: mongoose.Types.ObjectId
+  appKey: string
+  callbackUrl?: string
+  description: string
+  iconId?: mongoose.Types.ObjectId
+  permissions: string[]
+  isSuspended: boolean
+  isDeleted: boolean | any
+}
+
+export default (db: mongoose.Connection) => db.model<IApplication>('Application', schema, 'Applications')

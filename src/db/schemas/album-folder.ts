@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose'
 import * as mongooseAutoIncrement from 'mongoose-auto-increment'
+import { IUser } from './user';
 
 const Schema = mongoose.Schema
 
@@ -28,10 +29,19 @@ export const schema = new Schema({
     ref: 'User' }
 })
 
+export interface IAlbumFolder extends mongoose.Document {
+  createdAt: Date
+  color: string
+  cursor: number
+  name: string
+  parent?: IAlbumFolder | mongoose.Types.ObjectId
+  user: IUser | mongoose.Types.ObjectId
+}
+
 export default (db: mongoose.Connection) => {
   schema.plugin(mongooseAutoIncrement.plugin, {
     model: 'AlbumFolder',
     field: 'cursor'
   })
-  return db.model('AlbumFolder', schema, 'AlbumFolders')
+  return db.model<IAlbumFolder>('AlbumFolder', schema, 'AlbumFolders')
 }

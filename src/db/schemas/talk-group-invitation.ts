@@ -1,4 +1,6 @@
 import * as mongoose from 'mongoose'
+import { IUser } from './user';
+import { ITalkGroup } from './talk-group';
 
 const Schema = mongoose.Schema
 
@@ -25,4 +27,12 @@ export const schema = new Schema({
     ref: 'User' }
 })
 
-export default (db: mongoose.Connection) => db.model('TalkGroupInvitation', schema, 'TalkGroupInvitations')
+export interface ITalkGroupInvitation extends mongoose.Document{
+  createdAt: Date
+  group: ITalkGroup | mongoose.Types.ObjectId
+  isDeclined: boolean
+  text: string
+  user: IUser | mongoose.Types.ObjectId
+}
+
+export default (db: mongoose.Connection) => db.model<ITalkGroupInvitation>('TalkGroupInvitation', schema, 'TalkGroupInvitations')
