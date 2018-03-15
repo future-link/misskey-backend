@@ -19,10 +19,38 @@ const config = {
     clustering: process.argv.indexOf('--clustering') !== -1,
     verbose: process.argv.indexOf('--verbose') !== -1
   },
-  port: Number.parseInt(process.env.BACKEND_PORT)
+  port: Number.parseInt(process.env.BACKEND_PORT || "0")
 }
 
 const errors = validator(config)
 if (errors.length > 0) throw new Error(`'${errors.join(`', '`)}'`)
 
-export default config
+
+interface ConfigBase {
+  mongodb: string
+  port: number
+  flags: {
+    verbose: boolean
+  }
+}
+
+interface ConfigNotClustering extends ConfigBase {
+  flags: {
+    verbose: boolean
+    clustering: false
+  }
+  redis: string | null
+}
+
+interface ConfigClustering extends ConfigBase {
+  flags: {
+    verbose: boolean
+    clustering: true
+  }
+  redis: string
+}
+
+type Config = ConfigClustering | ConfigNotClustering
+
+export default config as Config
+
