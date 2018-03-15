@@ -1,4 +1,4 @@
-import dotenv from 'dotenv-safe'
+import * as dotenv from 'dotenv-safe'
 
 function validator (config) {
   const errors = []

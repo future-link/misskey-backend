@@ -1,4 +1,4 @@
-import util from 'util'
+import * as util from 'util'
 
 import time from './time'
 import config from '../config'

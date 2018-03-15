@@ -1,11 +1,11 @@
-import ws from 'ws'
-import cluster from 'cluster'
-import util from 'util'
+import * as ws from 'ws'
+import * as cluster from 'cluster'
+import * as util from 'util'
 
 import Router from './router'
 
-import msgpack from 'msgpack-lite'
-import yaml from 'js-yaml'
+import * as msgpack from 'msgpack-lite'
+import * as yaml from 'js-yaml'
 
 import Logger from '../tools/logger'
 

@@ -1,5 +1,5 @@
-import Router from 'koa-router'
-import mongoose from 'mongoose'
+import * as Router from 'koa-router'
+import * as mongoose from 'mongoose'
 
 import { File } from '../../db/mongodb'
 

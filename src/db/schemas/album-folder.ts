@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import mongooseAutoIncrement from 'mongoose-auto-increment'
+import * as mongoose from 'mongoose'
+import * as mongooseAutoIncrement from 'mongoose-auto-increment'
 
 const Schema = mongoose.Schema
 

@@ -1,5 +1,5 @@
-import cluster from 'cluster'
-import os from 'os'
+import * as cluster from 'cluster'
+import * as os from 'os'
 
 import config from './config'
 

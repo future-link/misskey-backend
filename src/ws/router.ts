@@ -1,5 +1,5 @@
-import pathToRegexp from 'path-to-regexp'
-import url from 'url'
+import * as pathToRegexp from 'path-to-regexp'
+import * as url from 'url'
 
 const isFunction = (target) => target.constructor !== undefined && ['Promise', 'Function', 'AsyncFunction'].includes(target.constructor.name)
 const generateObjectFromKVPairArrays = (ka, va) => {

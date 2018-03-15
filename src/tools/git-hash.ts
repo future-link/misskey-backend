@@ -1,10 +1,10 @@
-import fs from 'fs'
-import path from 'path'
+import * as fs from 'fs'
+import * as path from 'path'
 
 const git = path.resolve('.git')
 const head = fs.readFileSync(path.join(git, 'HEAD')).toString().trim()
 
-let hash
+let hash: string
 
 if (head.startsWith('ref: ')) {
   const ref = head.slice(5)

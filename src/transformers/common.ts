@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import * as mongoose from 'mongoose'
 
 export default (raw, Model = null) => {
   if (Model && !(raw instanceof Model)) throw Error(`can't pass common check of transformers.`)

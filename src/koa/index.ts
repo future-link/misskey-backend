@@ -1,14 +1,14 @@
-import Koa from 'koa'
-import Router from 'koa-router'
-import cluster from 'cluster'
-import mongoose from 'mongoose'
+import * as Koa from 'koa'
+import * as Router from 'koa-router'
+import * as cluster from 'cluster'
+import * as mongoose from 'mongoose'
 
-import bcrypt from 'bcryptjs'
-import crypto from 'crypto'
-import util from 'util'
+import * as bcrypt from 'bcryptjs'
+import * as crypto from 'crypto'
+import * as util from 'util'
 
-import msgpack from 'msgpack-lite'
-import yaml from 'js-yaml'
+import * as msgpack from 'msgpack-lite'
+import * as yaml from 'js-yaml'
 
 import hash from '../tools/git-hash'
 import Logger from '../tools/logger'

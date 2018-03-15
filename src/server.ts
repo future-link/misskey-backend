@@ -1,4 +1,4 @@
-import http from 'http'
+import * as http from 'http'
 
 import koa from './koa'
 import ws from './ws'
