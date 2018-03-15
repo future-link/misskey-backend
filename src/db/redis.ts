@@ -1,11 +1,11 @@
-import nodeRedis from 'redis'
-import mockRedis from 'redis-js'
+import * as nodeRedis from 'redis'
+const mockRedis = require('redis-js')
 
 import config from '../config'
 
 const redis = config.redis ? nodeRedis : mockRedis
 
-const connector = () => redis.createClient(config.redis)
+const connector = () => redis.createClient(config.redis) as nodeRedis.RedisClient
 
 export const asyncConnect = new Promise((resolve, reject) => {
   const client = connector()
