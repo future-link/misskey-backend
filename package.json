@@ -32,6 +32,17 @@
     "ws": "^3.2.0"
   },
   "devDependencies": {
-    "standard": "^10.0.3"
+    "@types/bcryptjs": "^2.4.1",
+    "@types/dotenv-safe": "^4.0.1",
+    "@types/js-yaml": "^3.10.1",
+    "@types/koa": "^2.0.44",
+    "@types/koa-router": "^7.0.27",
+    "@types/mongoose": "^5.0.7",
+    "@types/mongoose-auto-increment": "^5.0.30",
+    "@types/msgpack-lite": "^0.1.6",
+    "@types/redis": "^2.8.6",
+    "@types/ws": "^4.0.1",
+    "standard": "^10.0.3",
+    "typescript": "^2.7.2"
   }
 }
