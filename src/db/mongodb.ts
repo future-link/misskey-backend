@@ -17,7 +17,8 @@ import talkGroup from './schemas/talk-group'
 import user from './schemas/user'
 import userFollowing from './schemas/user-following'
 
-mongoose.Promise = global.Promise
+// ref: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/52bde4982f4f477f815fb2a484c584c9cf9109c0/types/mongoose/index.d.ts#L2337-L2370
+(<any>mongoose).Promise = global.Promise
 const db = mongoose.createConnection(config.mongodb, {
   promiseLibrary: global.Promise
 })
