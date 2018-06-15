@@ -138,23 +138,8 @@ const authenticater = {
     }
     if (!account) return null
 
-    // load cache
-    const srhs = await util.promisify(redis.get.bind(redis))(`mb:auth:basic:${account.id}`)
-    if (srhs) {
-      const srhsa = srhs.split('+')
-      const salt = srhsa.shift()
-      const goal = srhsa.join('+')
-      if (crypto.createHash('sha512').update(`${salt}+${secret}`).toString('hex') === goal) return account
-    }
-
     // verify secret by bcrypt
     if (!(await bcrypt.compare(secret, account.encryptedPassword))) return null
-
-    // cache 1hour with redis
-    const crsalt = crypto.randomBytes(16).toString('hex')
-    const crhs = crypto.createHash('sha512').update(`${crsalt}+${secret}`).toString('hex')
-    const exptime = 1 * 60 * 60
-    redis.set(`mb:auth:basic:${account.id}`, `${crsalt}+${crhs}`, 'EX', exptime)
 
     return account
   }
